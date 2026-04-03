@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="sk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mzdová Kalkulačka – DBPŠ 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js"></script>
+<style>
+:root{--bg:#f7f6f2;--surface:#f9f8f5;--s2:#fff;--soft:#f0ede8;--div:#dcd9d5;--border:#d0cdc7;--text:#28251d;--muted:#7a7974;--faint:#bab9b4;--p:#01696f;--p2:#0c4e54;--psoft:rgba(1,105,111,.1);--ok:#437a22;--warn:#964219;--err:#a12c7b;--sh:0 1px 3px rgba(0,0,0,.07)}
+[data-theme="dark"]{--bg:#171614;--surface:#1c1b19;--s2:#232220;--soft:#222120;--div:#262523;--border:#393836;--text:#cdccca;--muted:#797876;--faint:#5a5957;--p:#4f98a3;--p2:#227f8b;--psoft:rgba(79,152,163,.12);--ok:#6daa45;--warn:#bb653b;--err:#d163a7;--sh:0 1px 3px rgba(0,0,0,.25)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{min-height:100vh;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none}
+:focus-visible{outline:2px solid var(--p);outline-offset:3px;border-radius:6px}
+
+/* LAYOUT */
+.app{max-width:1200px;margin:0 auto;padding:24px 16px 48px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;gap:12px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:12px}
+.logo svg{width:40px;height:40px;flex-shrink:0}
+.logo h1{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
+.logo p{font-size:.8rem;color:var(--muted);margin-top:2px}
+.hright{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.shift-pill{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:8px 14px;font-size:.82rem;color:var(--muted)}
+.shift-pill input{width:56px;border:1px solid var(--border);background:var(--s2);border-radius:8px;padding:5px 8px;text-align:center;font-family:'DM Mono',monospace;font-size:.82rem;transition:border-color .15s}
+.shift-pill input:focus{outline:none;border-color:var(--p)}
+.tbtn{width:38px;height:38px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}
+.tbtn:hover{background:var(--soft);color:var(--text)}
+
+.grid{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:1000px){.grid{grid-template-columns:1.3fr 1fr}}
+.span2{grid-column:1/-1}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;box-shadow:var(--sh)}
+.ctitle{font-size:.75rem;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:16px}
+
+/* CALENDAR */
+.cal-layout{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:760px){.cal-layout{grid-template-columns:1fr 280px}}
+#calendar{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:8px}
+
+.fc{--fc-border-color:var(--border);--fc-page-bg-color:transparent;--fc-today-bg-color:rgba(1,105,111,.08);--fc-button-bg-color:var(--p);--fc-button-border-color:var(--p);--fc-button-hover-bg-color:var(--p2);--fc-button-hover-border-color:var(--p2);--fc-button-active-bg-color:var(--p2);color:var(--text)}
+.fc .fc-toolbar-title{font-size:1rem}
+.fc .fc-button{border-radius:10px;font-size:.82rem;padding:6px 12px}
+.fc .fc-daygrid-day-number,.fc .fc-col-header-cell-cushion{color:var(--text);text-decoration:none;font-size:.82rem}
+.fc .fc-event{border:0;border-radius:8px;padding:1px 5px;font-size:.74rem;cursor:pointer;font-weight:600}
+.fc .fc-daygrid-day.holiday-bg .fc-daygrid-day-number::after{content:" 🎉";font-size:.65rem}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.ltag{padding:5px 10px;border-radius:999px;font-size:.78rem;font-weight:600;border:1px solid transparent;cursor:default}
+.normal{background:rgba(67,122,34,.12);color:var(--ok);border-color:rgba(67,122,34,.3)}
+.saturday{background:rgba(218,113,1,.12);color:#da7101;border-color:rgba(218,113,1,.3)}
+.sunday{background:rgba(1,105,111,.12);color:var(--p);border-color:rgba(1,105,111,.3)}
+.holiday{background:rgba(161,44,123,.12);color:var(--err);border-color:rgba(161,44,123,.3)}
+.night{background:rgba(0,100,148,.12);color:#006494;border-color:rgba(0,100,148,.3)}
+
+/* SUMMARY LIST */
+.slist{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.srow{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:12px;background:var(--s2);border:1px solid var(--border)}
+.srow .slabel{font-size:.88rem;color:var(--muted)}
+.srow .sval{font-family:'DM Mono',monospace;font-weight:700;font-size:.88rem}
+.srow.total-row{background:var(--psoft);border-color:rgba(1,105,111,.2)}
+.srow.total-row .slabel,.srow.total-row .sval{color:var(--p);font-weight:700}
+
+/* SETTINGS */
+.frow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.frow:last-child{margin-bottom:0}
+.frow label{font-size:.9rem;flex:1}
+.frow input[type=number]{width:105px;padding:9px 12px;border:1px solid var(--border);border-radius:12px;background:var(--s2);font-family:'DM Mono',monospace;transition:border-color .15s}
+.frow input[type=number]:focus{outline:none;border-color:var(--p)}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;position:absolute}
+.ttrack{position:absolute;inset:0;background:var(--soft);border-radius:999px;cursor:pointer;transition:background .15s;border:1px solid var(--border)}
+.toggle input:checked+.ttrack{background:var(--p);border-color:var(--p)}
+.tthumb{position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .15s;pointer-events:none;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.toggle input:checked~.tthumb{transform:translateX(20px)}
+.fsep{height:1px;background:var(--div);margin:12px 0}
+.rate-hint{font-size:.77rem;color:var(--faint);line-height:1.6}
+
+/* BREAKDOWN */
+.blist{display:flex;flex-direction:column;gap:6px}
+.brow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:12px;background:var(--s2);border:1px solid var(--border)}
+.brow .bk{font-size:.88rem;color:var(--muted)}
+.brow .bsub{font-size:.75rem;color:var(--faint);margin-top:2px}
+.brow .bv{font-family:'DM Mono',monospace;font-weight:700;font-size:.88rem;white-space:nowrap}
+.brow.neg .bv{color:var(--err)}
+.brow.hl{background:var(--psoft);border-color:rgba(1,105,111,.2)}
+.brow.hl .bk,.brow.hl .bv{color:var(--p);font-weight:700}
+
+/* TOTAL CARD */
+.total-card{background:linear-gradient(135deg,var(--p),var(--p2));border:none}
+.total-card .ctitle{color:rgba(255,255,255,.65)}
+.net-amount{font-family:'DM Mono',monospace;font-size:2.4rem;font-weight:800;color:#fff;line-height:1;letter-spacing:-.02em}
+.net-sub{font-size:.88rem;color:rgba(255,255,255,.75);margin-top:6px}
+.prog-wrap{margin-top:18px}
+.prog-meta{display:flex;justify-content:space-between;font-size:.77rem;color:rgba(255,255,255,.6);margin-bottom:6px}
+.prog-track{height:8px;background:rgba(255,255,255,.15);border-radius:999px;overflow:hidden;display:flex}
+.seg{height:100%;transition:width .4s cubic-bezier(.16,1,.3,1)}
+.snet{background:rgba(109,170,69,.9)}.ssp{background:rgba(187,101,59,.9)}.stax{background:rgba(209,99,167,.85)}.smeal{background:rgba(232,175,52,.9)}
+.plegend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px}
+.plegend span{display:flex;align-items:center;gap:5px;font-size:.77rem;color:rgba(255,255,255,.65)}
+.pdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* NOTICE */
+.notice{margin-top:8px;padding:10px 14px;background:var(--psoft);border:1px solid rgba(1,105,111,.2);border-radius:14px;font-size:.8rem;color:var(--muted);line-height:1.7}
+
+/* DAY TYPE MODAL */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);z-index:999;align-items:center;justify-content:center}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:24px;width:min(360px,92vw);box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal h3{font-size:1rem;margin-bottom:6px}
+.modal .mdate{font-size:.85rem;color:var(--muted);margin-bottom:18px;font-family:'DM Mono',monospace}
+.mbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mbtn{padding:12px 10px;border-radius:14px;border:2px solid var(--border);background:var(--s2);text-align:center;cursor:pointer;transition:border-color .15s,background .15s;font-size:.88rem;font-weight:600}
+.mbtn:hover{border-color:var(--p)}
+.mbtn.mn{border-color:rgba(67,122,34,.4);background:rgba(67,122,34,.08);color:var(--ok)}
+.mbtn.ms{border-color:rgba(218,113,1,.4);background:rgba(218,113,1,.08);color:#da7101}
+.mbtn.msu{border-color:rgba(1,105,111,.4);background:rgba(1,105,111,.08);color:var(--p)}
+.mbtn.mh{border-color:rgba(161,44,123,.4);background:rgba(161,44,123,.08);color:var(--err)}
+.mbtn.mni{border-color:rgba(0,100,148,.4);background:rgba(0,100,148,.08);color:#006494}
+.mbtn.del{border-color:rgba(150,66,25,.3);background:rgba(150,66,25,.06);color:var(--warn);grid-column:1/-1}
+.mbtn.close{background:var(--soft);grid-column:1/-1;color:var(--muted);font-weight:400}
+.modal-sep{height:1px;background:var(--div);margin:10px 0}
+
+@media(max-width:600px){#calendar{min-height:420px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="logo">
+      <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="var(--p)"/><path d="M11 13h18M11 19.5h12M11 26h8" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="28.5" cy="26.5" r="5.5" fill="var(--p)" stroke="#fff" stroke-width="2"/><path d="M26.5 26.5h4M28.5 24.5v4" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <div><h1>Mzdová kalkulačka</h1><p>DBPŠ 2026 · klikni na dni v kalendári</p></div>
+    </div>
+    <div class="hright">
+      <div class="shift-pill">
+        <span>Zmena</span>
+        <input id="shiftH" type="number" min="1" max="16" step="0.5" value="7.5">
+        <span>h</span>
+      </div>
+      <button class="tbtn" id="themeBtn" aria-label="Tema">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="card span2">
+      <p class="ctitle">Kalendár zmien</p>
+      <div class="cal-layout">
+        <div>
+          <div id="calendar"></div>
+          <div class="notice" style="margin-top:10px">
+            Klikni na deň a vyber typ zmeny. Kliknutím na existujúci deň ho môžeš zmeniť alebo zmazať.<br>
+            Slovenské štátne sviatky 2026 sú prednastavené a automaticky navrhnuté ako <strong>sviatok</strong>.<br>
+            Dáta sa ukladajú v prehliadači — po reloade stránky sú zachované.
+          </div>
+        </div>
+        <div>
+          <div class="legend">
+            <span class="ltag normal">Bežný deň</span>
+            <span class="ltag saturday">Sobota</span>
+            <span class="ltag sunday">Nedeľa</span>
+            <span class="ltag holiday">Sviatok</span>
+            <span class="ltag night">Noc</span>
+          </div>
+          <div class="slist" id="summaryList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="ctitle">Nastavenia</p>
+      <div class="frow">
+        <label>Hodinová mzda</label>
+        <input id="baseRate" type="number" min="5.259" step="0.01" value="6.50">
+      </div>
+      <div class="frow">
+        <label>Stravné / obed</label>
+        <input id="mealPrice" type="number" min="0" step="0.01" value="1.00">
+      </div>
+      <div class="fsep"></div>
+      <div class="frow">
+        <label>OOP – odvody výnimka<br><span style="font-size:.77rem;color:var(--faint)">Prvých 200 € bez odvodov</span></label>
+        <label class="toggle"><input type="checkbox" id="useOOP" checked><span class="ttrack"></span><span class="tthumb"></span></label>
+      </div>
+      <div class="frow">
+        <label>NČZD – nezdaniteľná časť<br><span style="font-size:.77rem;color:var(--faint)">Prvých 497,23 € bez dane</span></label>
+        <label class="toggle"><input type="checkbox" id="useNCZD" checked><span class="ttrack"></span><span class="tthumb"></span></label>
+      </div>
+      <div class="fsep"></div>
+      <div class="rate-hint">
+        Sobota +2,63 €/h &nbsp;·&nbsp; Nedeľa +5,26 €/h<br>
+        Sviatok +5,26 €/h &nbsp;·&nbsp; Noc +2,10 €/h
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="ctitle">Výpočet mzdy</p>
+      <div class="blist" id="breakdown"></div>
+    </div>
+
+    <div class="card total-card span2">
+      <p class="ctitle">Výplata na účet</p>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
+        <div>
+          <div class="net-amount" id="netPay">0,00 €</div>
+          <div class="net-sub" id="grossLine">z hrubej mzdy 0,00 €</div>
+        </div>
+        <div id="pillsWrap" style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-meta"><span>Rozdelenie hrubej mzdy</span><span id="progPct"></span></div>
+        <div class="prog-track">
+          <div class="seg snet" id="snet" style="width:0%"></div>
+          <div class="seg ssp" id="ssp" style="width:0%"></div>
+          <div class="seg stax" id="stax" style="width:0%"></div>
+          <div class="seg smeal" id="smeal" style="width:0%"></div>
+        </div>
+        <div class="plegend">
+          <span><span class="pdot" style="background:rgba(109,170,69,.9)"></span>Čistá mzda</span>
+          <span><span class="pdot" style="background:rgba(187,101,59,.9)"></span>Odvody SP</span>
+          <span><span class="pdot" style="background:rgba(209,99,167,.85)"></span>Daň</span>
+          <span><span class="pdot" style="background:rgba(232,175,52,.9)"></span>Stravné</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h3>Vyber typ zmeny</h3>
+    <div class="mdate" id="modalDate"></div>
+    <div class="mbtns">
+      <button class="mbtn mn" data-type="normal">🟢 Bežný deň</button>
+      <button class="mbtn ms" data-type="saturday">🟠 Sobota</button>
+      <button class="mbtn msu" data-type="sunday">🔵 Nedeľa</button>
+      <button class="mbtn mh" data-type="holiday">🎉 Sviatok</button>
+      <button class="mbtn mni" data-type="night">🌙 Noc</button>
+      <div class="modal-sep" style="grid-column:1/-1"></div>
+      <button class="mbtn del" data-type="delete">🗑 Zmazať deň</button>
+      <button class="mbtn close" data-type="cancel">Zrušiť</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const root = document.documentElement;
+  const tbtn = document.getElementById('themeBtn');
+  let theme = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+  root.setAttribute('data-theme', theme);
+  const SUN_ICO = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+  const MOON_ICO = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  tbtn.innerHTML = theme === 'dark' ? SUN_ICO : MOON_ICO;
+  tbtn.addEventListener('click', () => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', theme);
+    tbtn.innerHTML = theme === 'dark' ? SUN_ICO : MOON_ICO;
+  });
+
+  const SURCHARGE = { normal: 0, saturday: 2.6295, sunday: 5.259, holiday: 5.259, night: 2.1036 };
+  const COLORS = { normal: 'rgba(67,122,34,.88)', saturday: 'rgba(218,113,1,.9)', sunday: 'rgba(1,105,111,.9)', holiday: 'rgba(161,44,123,.9)', night: 'rgba(0,100,148,.9)' };
+  const LABELS = { normal: 'Bežný deň', saturday: 'Sobota', sunday: 'Nedeľa', holiday: 'Sviatok', night: 'Noc' };
+  const TYPES = ['normal', 'saturday', 'sunday', 'holiday', 'night'];
+  const SK_HOLIDAYS_2026 = ['2026-01-01','2026-01-06','2026-04-03','2026-04-06','2026-05-01','2026-05-08','2026-07-05','2026-08-29','2026-09-01','2026-09-15','2026-11-01','2026-11-17','2026-12-24','2026-12-25','2026-12-26'];
+
+  const r2 = n => Math.round(n * 100) / 100;
+  const fmt = n => n.toFixed(2).replace('.', ',') + '\u00a0€';
+  const fmtH = n => n.toFixed(1).replace('.', ',') + '\u00a0h';
+
+  const stored = JSON.parse(localStorage.getItem('mzda_v2') || '{}');
+  const shifts = stored.shifts || {};
+  const cfg = stored.cfg || {};
+
+  const baseRateEl = document.getElementById('baseRate');
+  const mealEl = document.getElementById('mealPrice');
+  const useOOPEl = document.getElementById('useOOP');
+  const useNCZDEl = document.getElementById('useNCZD');
+  const shiftHEl = document.getElementById('shiftH');
+
+  if (cfg.baseRate) baseRateEl.value = cfg.baseRate;
+  if (cfg.meal) mealEl.value = cfg.meal;
+  if (typeof cfg.oop === 'boolean') useOOPEl.checked = cfg.oop;
+  if (typeof cfg.nczd === 'boolean') useNCZDEl.checked = cfg.nczd;
+  if (cfg.shift) shiftHEl.value = cfg.shift;
+
+  function save() {
+    localStorage.setItem('mzda_v2', JSON.stringify({
+      shifts,
+      cfg: {
+        baseRate: baseRateEl.value,
+        meal: mealEl.value,
+        oop: useOOPEl.checked,
+        nczd: useNCZDEl.checked,
+        shift: shiftHEl.value
+      }
+    }));
+  }
+
+  let calendar;
+  function buildEvents() {
+    return Object.entries(shifts).map(([date, kind]) => ({
+      id: date,
+      title: LABELS[kind],
+      start: date,
+      allDay: true,
+      backgroundColor: COLORS[kind],
+      borderColor: 'transparent'
+    }));
+  }
+  function refreshCalendar() {
+    if (!calendar) return;
+    calendar.removeAllEvents();
+    buildEvents().forEach(e => calendar.addEvent(e));
+  }
+
+  const modalEl = document.getElementById('modal');
+  const modalDate = document.getElementById('modalDate');
+  let pendingDate = null;
+
+  function openModal(dateStr) {
+    pendingDate = dateStr;
+    const d = new Date(dateStr + 'T00:00:00');
+    const days = ['nedeľa','pondelok','utorok','streda','štvrtok','piatok','sobota'];
+    modalDate.textContent = days[d.getDay()] + ' ' + d.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' });
+    document.querySelector('.mbtn.del').style.display = shifts[dateStr] ? '' : 'none';
+    modalEl.classList.add('open');
+  }
+  function closeModal() {
+    modalEl.classList.remove('open');
+    pendingDate = null;
+  }
+
+  modalEl.addEventListener('click', e => {
+    if (e.target === modalEl) closeModal();
+  });
+
+  document.querySelectorAll('.mbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.type;
+      if (t === 'cancel') { closeModal(); return; }
+      if (t === 'delete') { delete shifts[pendingDate]; }
+      else { shifts[pendingDate] = t; }
+      closeModal();
+      save();
+      refreshCalendar();
+      renderAll();
+    });
+  });
+
+  calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+    initialView: 'dayGridMonth',
+    firstDay: 1,
+    height: 'auto',
+    locale: 'sk',
+    headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
+    dateClick: info => openModal(info.dateStr.slice(0, 10)),
+    events: buildEvents(),
+    dayCellDidMount: arg => {
+      const ds = arg.date.toISOString().slice(0, 10);
+      if (SK_HOLIDAYS_2026.includes(ds)) {
+        arg.el.style.background = 'rgba(161,44,123,.05)';
+      }
+    }
+  });
+  calendar.render();
+
+  function calc() {
+    const shiftH = Math.max(0.5, parseFloat(shiftHEl.value) || 7.5);
+    const baseRate = Math.max(5.259, parseFloat(baseRateEl.value) || 6.5);
+    const mealPrice = Math.max(0, parseFloat(mealEl.value) || 0);
+
+    const counts = { normal: 0, saturday: 0, sunday: 0, holiday: 0, night: 0 };
+    Object.values(shifts).forEach(k => counts[k] = (counts[k] || 0) + 1);
+
+    const daysTotal = Object.values(counts).reduce((a, b) => a + b, 0);
+    const totalH = daysTotal * shiftH;
+    const basePay = totalH * baseRate;
+    const surPay = TYPES.reduce((sum, k) => sum + counts[k] * shiftH * SURCHARGE[k], 0);
+    const gross = r2(basePay + surPay);
+
+    const oop = useOOPEl.checked ? 200 : 0;
+    const spBasis = Math.max(0, gross - oop);
+    const starobne = r2(spBasis * 0.04);
+    const invalidne = r2(spBasis * 0.03);
+    const sp = starobne + invalidne;
+
+    const taxBasis = r2(gross - sp);
+    const nczd = useNCZDEl.checked ? 497.23 : 0;
+    const taxable = Math.max(0, r2(taxBasis - nczd));
+    const tax = r2(taxable * 0.19);
+
+    const meal = r2(daysTotal * mealPrice);
+    const net = r2(Math.max(0, gross - sp - tax - meal));
+
+    return { counts, daysTotal, totalH, basePay, surPay, gross, oop, spBasis, starobne, invalidne, sp, taxBasis, nczd, taxable, tax, meal, net, shiftH, baseRate, mealPrice };
+  }
+
+  function renderAll() {
+    const d = calc();
+
+    const sl = document.getElementById('summaryList');
+    sl.innerHTML = '';
+    const addRow = (label, days, hours, cls) => {
+      const el = document.createElement('div');
+      el.className = 'srow' + (cls ? ' ' + cls : '');
+      el.innerHTML = `<span class="slabel">${label}</span><span class="sval">${days} d\u00a0/\u00a0${fmtH(hours)}</span>`;
+      sl.appendChild(el);
+    };
+    TYPES.forEach(k => addRow(LABELS[k], d.counts[k], d.counts[k] * d.shiftH));
+    addRow('Spolu', d.daysTotal, d.totalH, 'total-row');
+
+    const bd = document.getElementById('breakdown');
+    bd.innerHTML = '';
+    const addB = (label, val, sub, cls) => {
+      const el = document.createElement('div');
+      el.className = 'brow' + (cls ? ' ' + cls : '');
+      el.innerHTML = `<div><div class="bk">${label}</div>${sub ? `<div class="bsub">${sub}</div>` : ''}</div><div class="bv">${val}</div>`;
+      bd.appendChild(el);
+    };
+    addB('Základná mzda', fmt(d.basePay), `${fmtH(d.totalH)} × ${d.baseRate.toFixed(2)}\u00a0€`);
+    addB('Príplatky', fmt(d.surPay), 'sobota / nedeľa / sviatok / noc');
+    addB('Hrubá mzda', fmt(d.gross), `${d.daysTotal} dní`, 'hl');
+    addB('Starobné + invalidné (7 %)', '−' + fmt(d.sp), `základ ${fmt(d.spBasis)} (OOP −${fmt(d.oop)})`, 'neg');
+    addB('Daň z príjmu (19 %)', '−' + fmt(d.tax), `základ ${fmt(d.taxable)} (NČZD −${fmt(d.nczd)})`, d.tax > 0 ? 'neg' : '');
+    addB('Stravné', '−' + fmt(d.meal), `${d.daysTotal} obedov × ${d.mealPrice.toFixed(2)}\u00a0€`, d.meal > 0 ? 'neg' : '');
+
+    document.getElementById('netPay').textContent = fmt(d.net);
+    document.getElementById('grossLine').textContent = 'z hrubej mzdy ' + fmt(d.gross);
+
+    const pw = document.getElementById('pillsWrap');
+    pw.innerHTML = '';
+    const addPill = (txt, green) => {
+      const el = document.createElement('span');
+      el.style.cssText = `background:${green ? 'rgba(109,170,69,.3)' : 'rgba(255,255,255,.15)'};padding:4px 12px;border-radius:999px;font-size:.78rem;color:#fff`;
+      el.textContent = txt;
+      pw.appendChild(el);
+    };
+    addPill(useOOPEl.checked ? 'OOP ✓' : 'OOP ✗', useOOPEl.checked);
+    addPill(useNCZDEl.checked && d.tax === 0 ? 'Daň 0,00 €' : useNCZDEl.checked ? 'NČZD ✓' : 'NČZD ✗', useNCZDEl.checked && d.tax === 0);
+    if (d.gross > 0) addPill(Math.round(d.net / d.gross * 100) + '% na ruke', false);
+
+    if (d.gross > 0) {
+      const g = d.gross;
+      document.getElementById('snet').style.width = (d.net / g * 100) + '%';
+      document.getElementById('ssp').style.width = (d.sp / g * 100) + '%';
+      document.getElementById('stax').style.width = (d.tax / g * 100) + '%';
+      document.getElementById('smeal').style.width = (d.meal / g * 100) + '%';
+      document.getElementById('progPct').textContent = Math.round(d.net / g * 100) + '% čistá';
+    } else {
+      ['snet','ssp','stax','smeal'].forEach(id => document.getElementById(id).style.width = '0%');
+      document.getElementById('progPct').textContent = '';
+    }
+
+    save();
+  }
+
+  [baseRateEl, mealEl, shiftHEl].forEach(el => el.addEventListener('input', renderAll));
+  [useOOPEl, useNCZDEl].forEach(el => el.addEventListener('change', renderAll));
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
