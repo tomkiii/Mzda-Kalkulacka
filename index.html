@@ -31,7 +31,10 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 @media(min-width:1000px){.grid{grid-template-columns:1.35fr 1fr}}
 .span2{grid-column:1/-1}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:var(--sh)}
-.ctitle{font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:14px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.ctitle{font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0}
+.reset-btn{font-size:.76rem;padding:5px 12px;border-radius:999px;border:1px solid rgba(150,66,25,.3);color:var(--warn);background:rgba(150,66,25,.06);transition:all .15s}
+.reset-btn:hover{background:rgba(150,66,25,.14);border-color:var(--warn)}
 .cal-layout{display:grid;gap:14px;grid-template-columns:1fr}
 @media(min-width:760px){.cal-layout{grid-template-columns:1fr 270px}}
 #calendar{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:8px}
@@ -41,7 +44,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .fc .fc-event{border:0;border-radius:7px;padding:1px 4px;font-size:.72rem;cursor:pointer;font-weight:600;white-space:nowrap;overflow:hidden}
 .fc .fc-daygrid-event-harness+.fc-daygrid-event-harness{margin-top:2px}
 .legend{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
-.ltag{padding:4px 9px;border-radius:999px;font-size:.76rem;font-weight:600;border:1px solid transparent;cursor:default}
+.ltag{padding:4px 9px;border-radius:999px;font-size:.76rem;font-weight:600;border:1px solid transparent}
 .cn{background:rgba(67,122,34,.12);color:var(--ok);border-color:rgba(67,122,34,.3)}
 .cs{background:rgba(218,113,1,.12);color:#da7101;border-color:rgba(218,113,1,.3)}
 .csu{background:rgba(1,105,111,.12);color:var(--p);border-color:rgba(1,105,111,.3)}
@@ -54,19 +57,30 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .srow.tr{background:var(--psoft);border-color:rgba(1,105,111,.2)}.srow.tr .sk,.srow.tr .sv{color:var(--p)}
 .srow.combo-note{background:rgba(218,113,1,.06);border-color:rgba(218,113,1,.2)}.srow.combo-note .sk{color:#9a5600;font-size:.78rem}
 .manual-table{width:100%;border-collapse:collapse}
-.manual-table th{font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:700;padding:0 8px 10px;text-align:left}
-.manual-table th:last-child,.manual-table td:last-child{text-align:right}
-.manual-table td{padding:5px 6px;vertical-align:middle}
+.manual-table th{font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:700;padding:0 6px 10px;text-align:left}
+.manual-table th:not(:first-child){text-align:center}
+.manual-table td{padding:5px 4px;vertical-align:middle;text-align:center}
+.manual-table td:first-child{text-align:left}
 .manual-table tr:not(:last-child) td{border-bottom:1px solid var(--div)}
 .type-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;flex-shrink:0}
 .type-label{display:flex;align-items:center;font-size:.88rem}
-.minput{width:80px;padding:7px 9px;border:1px solid var(--border);border-radius:10px;background:var(--s2);font-family:'DM Mono',monospace;font-size:.82rem;text-align:center;transition:border-color .15s}
+.minput{width:74px;padding:7px 8px;border:1px solid var(--border);border-radius:10px;background:var(--s2);font-family:'DM Mono',monospace;font-size:.82rem;text-align:center;transition:border-color .15s}
 .minput:focus{outline:none;border-color:var(--p)}
 .minput.manual-override{border-color:var(--warn);background:rgba(150,66,25,.05)}
-.hint-cell{font-size:.74rem;color:var(--faint);padding-left:4px;white-space:nowrap}
+.hint-cell{font-size:.72rem;color:var(--faint);padding-left:2px;white-space:nowrap}
 .sync-row{display:flex;justify-content:flex-end;margin-top:10px}
 .sync-btn{font-size:.78rem;color:var(--p);padding:5px 12px;border:1px solid var(--border);border-radius:999px;background:var(--s2)}
 .sync-btn:hover{background:var(--psoft)}
+.meal-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:var(--s2);border:1px solid var(--border);margin-top:10px}
+.meal-row .meal-label{flex:1;font-size:.88rem}
+.meal-row .meal-sub{font-size:.74rem;color:var(--faint);margin-top:2px}
+.meal-input-wrap{display:flex;align-items:center;gap:6px}
+.meal-input-wrap input{width:68px;padding:7px 10px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-family:'DM Mono',monospace;font-size:.84rem;text-align:center;transition:border-color .15s}
+.meal-input-wrap input:focus{outline:none;border-color:var(--p)}
+.meal-input-wrap input.auto-val{color:var(--faint)}
+.meal-input-wrap input.user-val{border-color:var(--p);color:var(--text)}
+.reset-obedy{font-size:.8rem;color:var(--muted);padding:4px 8px;border:1px solid var(--border);border-radius:8px;background:var(--soft);transition:all .15s}
+.reset-obedy:hover{color:var(--p);border-color:var(--p)}
 .frow{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
 .frow:last-child{margin-bottom:0}
 .frow label{font-size:.88rem;flex:1;padding-top:2px}
@@ -122,8 +136,9 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .maction.primary{background:var(--p);border-color:var(--p);color:#fff}
 .maction.primary:hover{background:var(--p2)}
 .maction.del{color:var(--warn);border-color:rgba(150,66,25,.3)}
+.maction.del:hover{background:rgba(150,66,25,.07)}
 .maction.cancel{color:var(--muted)}
-@media(max-width:600px){#calendar{min-height:400px}}
+@media(max-width:600px){#calendar{min-height:400px}.minput{width:62px}}
 </style>
 </head>
 <body>
@@ -140,51 +155,50 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
       </button>
     </div>
   </header>
-
   <div class="mode-tabs">
     <button class="mtab active" id="tabCal">📅 Kalendár</button>
     <button class="mtab" id="tabMan">✏️ Ručné zadanie</button>
   </div>
-
   <div class="grid">
     <div class="card span2" id="calPanel">
-      <p class="ctitle">Kalendár zmien</p>
+      <div class="card-header">
+        <p class="ctitle">Kalendár zmien</p>
+        <button class="reset-btn" id="resetCal">🗑 Resetovať kalendár</button>
+      </div>
       <div class="cal-layout">
         <div>
           <div id="calendar"></div>
-          <div class="notice">
-            Klikni na deň → vyber <strong>jeden alebo viac typov</strong> (napr. Nedeľa + Sviatok zároveň).<br>
-            Sviatky SK 2026 sú prednastavené. Dáta sa ukladajú v prehliadači.
-          </div>
+          <div class="notice">Klikni na deň → vyber <strong>jeden alebo viac typov</strong> (napr. Nedeľa + Sviatok zároveň). Sviatky SK 2026 sú prednastavené. Dáta sa ukladajú v prehliadači.</div>
         </div>
         <div>
           <div class="legend">
-            <span class="ltag cn">Bežný deň</span>
-            <span class="ltag cs">Sobota</span>
-            <span class="ltag csu">Nedeľa</span>
-            <span class="ltag ch">Sviatok</span>
-            <span class="ltag cni">Noc</span>
+            <span class="ltag cn">Bežný deň</span><span class="ltag cs">Sobota</span><span class="ltag csu">Nedeľa</span><span class="ltag ch">Sviatok</span><span class="ltag cni">Noc</span>
           </div>
           <div class="slist" id="calSummary"></div>
         </div>
       </div>
     </div>
-
     <div class="card span2" id="manPanel" style="display:none">
-      <p class="ctitle">Ručné zadanie dní a hodín</p>
+      <div class="card-header">
+        <p class="ctitle">Ručné zadanie dní a hodín</p>
+        <button class="sync-btn" id="syncFromCal" style="margin:0">↩ Načítať z kalendára</button>
+      </div>
       <table class="manual-table">
-        <thead><tr><th>Typ zmeny</th><th>Dni</th><th>Hodiny</th><th></th></tr></thead>
+        <thead><tr><th>Typ zmeny</th><th>Dni</th><th>Hodiny</th><th>Obedy</th><th></th></tr></thead>
         <tbody id="manualBody"></tbody>
       </table>
-      <div class="sync-row">
-        <button class="sync-btn" id="syncFromCal">↩ Načítať z kalendára</button>
-      </div>
     </div>
-
     <div class="card">
-      <p class="ctitle">Nastavenia</p>
+      <p class="ctitle" style="margin-bottom:14px">Nastavenia</p>
       <div class="frow"><label>Hodinová mzda</label><input id="baseRate" type="number" min="5.259" step="0.01" value="6.50"></div>
-      <div class="frow"><label>Stravné / obed</label><input id="mealPrice" type="number" min="0" step="0.01" value="1.00"></div>
+      <div class="frow"><label>Cena jedného obeda</label><input id="mealPrice" type="number" min="0" step="0.01" value="1.00"></div>
+      <div class="meal-row">
+        <div class="meal-label">Počet obedov<div class="meal-sub">Auto = počet dní · môžeš prepísať</div></div>
+        <div class="meal-input-wrap">
+          <input id="obedyInput" type="number" min="0" step="1" class="auto-val" value="0">
+          <button class="reset-obedy" id="resetObedy" title="Späť na auto">↺</button>
+        </div>
+      </div>
       <div class="fsep"></div>
       <div class="frow">
         <label>OOP – odvody výnimka<div class="fsub">Prvých 200 € bez odvodov</div></label>
@@ -197,12 +211,10 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
       <div class="fsep"></div>
       <div class="rate-hint">Sobota +2,63 €/h · Nedeľa +5,26 €/h<br>Sviatok +5,26 €/h · Noc +2,10 €/h</div>
     </div>
-
     <div class="card">
-      <p class="ctitle">Výpočet mzdy</p>
+      <p class="ctitle" style="margin-bottom:14px">Výpočet mzdy</p>
       <div class="blist" id="breakdown"></div>
     </div>
-
     <div class="card total-card span2">
       <p class="ctitle">Výplata na účet</p>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
@@ -230,7 +242,6 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
     </div>
   </div>
 </div>
-
 <div class="modal-backdrop" id="modal">
   <div class="modal">
     <h3>Typ zmeny</h3>
@@ -243,7 +254,6 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
     </div>
   </div>
 </div>
-
 <script>
 (function(){
 const root=document.documentElement;
@@ -254,7 +264,6 @@ const SUN='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="c
 const MOON='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 tbtn.innerHTML=theme==='dark'?SUN:MOON;
 tbtn.addEventListener('click',()=>{theme=theme==='dark'?'light':'dark';root.setAttribute('data-theme',theme);tbtn.innerHTML=theme==='dark'?SUN:MOON;});
-
 const SUR={normal:0,saturday:2.6295,sunday:5.259,holiday:5.259,night:2.1036};
 const COLORS={normal:'rgba(67,122,34,.85)',saturday:'rgba(218,113,1,.88)',sunday:'rgba(1,105,111,.88)',holiday:'rgba(161,44,123,.88)',night:'rgba(0,100,148,.88)'};
 const LABELS={normal:'Bežný deň',saturday:'Sobota',sunday:'Nedeľa',holiday:'Sviatok',night:'Noc'};
@@ -262,57 +271,48 @@ const ICONS={normal:'🟢',saturday:'🟠',sunday:'🔵',holiday:'🎉',night:'�
 const DOT={normal:'#437a22',saturday:'#da7101',sunday:'#01696f',holiday:'#a12c7b',night:'#006494'};
 const TYPES=['normal','saturday','sunday','holiday','night'];
 const SK_HOL=['2026-01-01','2026-01-06','2026-04-03','2026-04-06','2026-05-01','2026-05-08','2026-07-05','2026-08-29','2026-09-01','2026-09-15','2026-11-01','2026-11-17','2026-12-24','2026-12-25','2026-12-26'];
-
 const r2=n=>Math.round(n*100)/100;
 const fmt=n=>n.toFixed(2).replace('.',',')+'\u00a0€';
 const fmtH=n=>n.toFixed(1).replace('.',',')+'\u00a0h';
-
-const stored=JSON.parse(localStorage.getItem('mzda_v3')||'{}');
+const stored=JSON.parse(localStorage.getItem('mzda_v4')||'{}');
 const shifts=stored.shifts||{};
 const cfg=stored.cfg||{};
 const manOverrides=stored.manOverrides||{};
-
+let obedyOverride=stored.obedyOverride!=null?stored.obedyOverride:null;
 const shiftHEl=document.getElementById('shiftH');
 const baseRateEl=document.getElementById('baseRate');
 const mealEl=document.getElementById('mealPrice');
 const useOOPEl=document.getElementById('useOOP');
 const useNCZDEl=document.getElementById('useNCZD');
-if(cfg.shift) shiftHEl.value=cfg.shift;
-if(cfg.baseRate) baseRateEl.value=cfg.baseRate;
-if(cfg.meal) mealEl.value=cfg.meal;
-if(typeof cfg.oop==='boolean') useOOPEl.checked=cfg.oop;
-if(typeof cfg.nczd==='boolean') useNCZDEl.checked=cfg.nczd;
-
-function save(){localStorage.setItem('mzda_v3',JSON.stringify({shifts,manOverrides,cfg:{shift:shiftHEl.value,baseRate:baseRateEl.value,meal:mealEl.value,oop:useOOPEl.checked,nczd:useNCZDEl.checked}}));}
-
+const obedyInput=document.getElementById('obedyInput');
+if(cfg.shift)shiftHEl.value=cfg.shift;
+if(cfg.baseRate)baseRateEl.value=cfg.baseRate;
+if(cfg.meal)mealEl.value=cfg.meal;
+if(typeof cfg.oop==='boolean')useOOPEl.checked=cfg.oop;
+if(typeof cfg.nczd==='boolean')useNCZDEl.checked=cfg.nczd;
+function save(){localStorage.setItem('mzda_v4',JSON.stringify({shifts,manOverrides,obedyOverride,cfg:{shift:shiftHEl.value,baseRate:baseRateEl.value,meal:mealEl.value,oop:useOOPEl.checked,nczd:useNCZDEl.checked}}));}
+obedyInput.addEventListener('input',()=>{const v=parseInt(obedyInput.value);obedyOverride=isNaN(v)?null:v;obedyInput.classList.toggle('auto-val',obedyOverride===null);obedyInput.classList.toggle('user-val',obedyOverride!==null);save();renderAll();});
+document.getElementById('resetObedy').addEventListener('click',()=>{obedyOverride=null;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');save();renderAll();});
+document.getElementById('resetCal').addEventListener('click',()=>{if(!confirm('Naozaj zmazať všetky dni z kalendára?'))return;Object.keys(shifts).forEach(k=>delete shifts[k]);obedyOverride=null;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');save();refreshCal();renderAll();});
 let mode='calendar';
-const tabCal=document.getElementById('tabCal');
-const tabMan=document.getElementById('tabMan');
-const calPanel=document.getElementById('calPanel');
-const manPanel=document.getElementById('manPanel');
+const tabCal=document.getElementById('tabCal'),tabMan=document.getElementById('tabMan');
+const calPanel=document.getElementById('calPanel'),manPanel=document.getElementById('manPanel');
 tabCal.addEventListener('click',()=>{mode='calendar';tabCal.classList.add('active');tabMan.classList.remove('active');calPanel.style.display='';manPanel.style.display='none';renderAll();});
 tabMan.addEventListener('click',()=>{mode='manual';tabMan.classList.add('active');tabCal.classList.remove('active');manPanel.style.display='';calPanel.style.display='none';buildManualTable();renderAll();});
-
 let calendar;
 function typeColor(types){if(types.includes('holiday'))return COLORS.holiday;if(types.includes('night'))return COLORS.night;if(types.includes('sunday'))return COLORS.sunday;if(types.includes('saturday'))return COLORS.saturday;return COLORS.normal;}
 function typeLabel(types){if(types.length===1)return LABELS[types[0]];return types.map(t=>ICONS[t]).join('');}
 function buildCalEvents(){return Object.entries(shifts).map(([date,types])=>({id:date,title:typeLabel(types),start:date,allDay:true,backgroundColor:typeColor(types),borderColor:'transparent'}));}
 function refreshCal(){if(!calendar)return;calendar.removeAllEvents();buildCalEvents().forEach(e=>calendar.addEvent(e));}
-
-const modalEl=document.getElementById('modal');
-const modalDateEl=document.getElementById('modalDate');
-const modalChecks=document.getElementById('modalChecks');
-let pendingDate=null;
-let checkState={};
-
+const modalEl=document.getElementById('modal'),modalDateEl=document.getElementById('modalDate'),modalChecks=document.getElementById('modalChecks');
+let pendingDate=null,checkState={};
 function openModal(dateStr){
   pendingDate=dateStr;
   const d=new Date(dateStr+'T00:00:00');
   const days=['nedeľa','pondelok','utorok','streda','štvrtok','piatok','sobota'];
   modalDateEl.textContent=days[d.getDay()]+' '+d.toLocaleDateString('sk-SK',{day:'numeric',month:'long',year:'numeric'});
   const existing=shifts[dateStr]||[];
-  const isHol=SK_HOL.includes(dateStr);
-  const dow=d.getDay();
+  const isHol=SK_HOL.includes(dateStr),dow=d.getDay();
   checkState={};
   if(existing.length>0){existing.forEach(t=>checkState[t]=true);}
   else{if(isHol)checkState.holiday=true;if(dow===0)checkState.sunday=true;if(dow===6)checkState.saturday=true;if(!isHol&&dow!==0&&dow!==6)checkState.normal=true;}
@@ -322,7 +322,7 @@ function openModal(dateStr){
 }
 function renderModalChecks(){
   modalChecks.innerHTML='';
-  const surL={normal:'+0,00 €/h',saturday:'+2,63 €/h',sunday:'+5,26 €/h',holiday:'+5,26 €/h',night:'+2,10 €/h'};
+  const surL={normal:'+0,00\u00a0€/h',saturday:'+2,63\u00a0€/h',sunday:'+5,26\u00a0€/h',holiday:'+5,26\u00a0€/h',night:'+2,10\u00a0€/h'};
   const cc={normal:'checked-n',saturday:'checked-s',sunday:'checked-su',holiday:'checked-h',night:'checked-ni'};
   TYPES.forEach(t=>{
     const checked=!!checkState[t];
@@ -341,10 +341,8 @@ document.getElementById('modalDel').addEventListener('click',()=>{delete shifts[
 document.getElementById('modalSave').addEventListener('click',()=>{
   const selected=TYPES.filter(t=>checkState[t]);
   if(selected.length===0){alert('Vyber aspoň jeden typ zmeny.');return;}
-  shifts[pendingDate]=selected;
-  closeModal();save();refreshCal();renderAll();
+  shifts[pendingDate]=selected;closeModal();save();refreshCal();renderAll();
 });
-
 calendar=new FullCalendar.Calendar(document.getElementById('calendar'),{
   initialView:'dayGridMonth',firstDay:1,height:'auto',locale:'sk',
   headerToolbar:{left:'prev,next today',center:'title',right:''},
@@ -353,41 +351,39 @@ calendar=new FullCalendar.Calendar(document.getElementById('calendar'),{
   dayCellDidMount:arg=>{const ds=arg.date.toISOString().slice(0,10);if(SK_HOL.includes(ds))arg.el.style.background='rgba(161,44,123,.04)';}
 });
 calendar.render();
-
 function getCalCounts(){const c={normal:0,saturday:0,sunday:0,holiday:0,night:0};Object.values(shifts).forEach(types=>types.forEach(t=>c[t]=(c[t]||0)+1));return c;}
-
 function buildManualTable(){
   const shiftH=parseFloat(shiftHEl.value)||7.5;
   const calCounts=getCalCounts();
-  const tbody=document.getElementById('manualBody');
-  tbody.innerHTML='';
+  const tbody=document.getElementById('manualBody');tbody.innerHTML='';
   TYPES.forEach(t=>{
-    const calDays=calCounts[t];
-    const ov=manOverrides[t]||{};
+    const calDays=calCounts[t],ov=manOverrides[t]||{};
     const days=ov.days!=null?ov.days:calDays;
     const hours=ov.hours!=null?ov.hours:(days*shiftH);
+    const obedy=ov.obedy!=null?ov.obedy:days;
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><span class="type-label"><span class="type-dot" style="background:${DOT[t]}"></span>${LABELS[t]}</span></td><td><input class="minput mdays${ov.days!=null?' manual-override':''}" type="number" min="0" step="1" value="${days}"></td><td><input class="minput mhours${ov.hours!=null?' manual-override':''}" type="number" min="0" step="0.5" value="${hours.toFixed(1)}"></td><td><span class="hint-cell" style="color:${calDays>0?'var(--p)':'var(--faint)'}">${calDays>0?calDays+'d z kal.':''}</span></td>`;
+    tr.innerHTML=`<td><span class="type-label"><span class="type-dot" style="background:${DOT[t]}"></span>${LABELS[t]}</span></td><td><input class="minput mdays${ov.days!=null?' manual-override':''}" type="number" min="0" step="1" value="${days}"></td><td><input class="minput mhours${ov.hours!=null?' manual-override':''}" type="number" min="0" step="0.5" value="${hours.toFixed(1)}"></td><td><input class="minput mobedy${ov.obedy!=null?' manual-override':''}" type="number" min="0" step="1" value="${obedy}"></td><td><span class="hint-cell" style="color:${calDays>0?'var(--p)':'var(--faint)'}">${calDays>0?calDays+'d':''}</span></td>`;
     tbody.appendChild(tr);
-    const dI=tr.querySelector('.mdays');
-    const hI=tr.querySelector('.mhours');
-    dI.addEventListener('input',()=>{const v=parseFloat(dI.value)||0;if(!manOverrides[t])manOverrides[t]={};manOverrides[t].days=v;if(manOverrides[t].hours==null)hI.value=(v*(parseFloat(shiftHEl.value)||7.5)).toFixed(1);dI.classList.add('manual-override');save();renderAll();});
+    const dI=tr.querySelector('.mdays'),hI=tr.querySelector('.mhours'),oI=tr.querySelector('.mobedy');
+    dI.addEventListener('input',()=>{const v=parseFloat(dI.value)||0;if(!manOverrides[t])manOverrides[t]={};manOverrides[t].days=v;if(manOverrides[t].hours==null)hI.value=(v*(parseFloat(shiftHEl.value)||7.5)).toFixed(1);if(manOverrides[t].obedy==null)oI.value=v;dI.classList.add('manual-override');save();renderAll();});
     hI.addEventListener('input',()=>{if(!manOverrides[t])manOverrides[t]={};manOverrides[t].hours=parseFloat(hI.value)||0;hI.classList.add('manual-override');save();renderAll();});
+    oI.addEventListener('input',()=>{if(!manOverrides[t])manOverrides[t]={};manOverrides[t].obedy=parseInt(oI.value)||0;oI.classList.add('manual-override');save();renderAll();});
   });
 }
 document.getElementById('syncFromCal').addEventListener('click',()=>{TYPES.forEach(t=>delete manOverrides[t]);save();buildManualTable();renderAll();});
-
 function calc(){
   const shiftH=Math.max(0.5,parseFloat(shiftHEl.value)||7.5);
   const baseRate=Math.max(5.259,parseFloat(baseRateEl.value)||6.5);
   const mealPrice=Math.max(0,parseFloat(mealEl.value)||0);
-  let basePay=0,surPay=0,daysTotal=0,totalH=0;
+  let basePay=0,surPay=0,daysTotal=0,totalH=0,manObedy=0;
   if(mode==='calendar'){
     Object.values(shifts).forEach(types=>{daysTotal++;totalH+=shiftH;basePay+=shiftH*baseRate;types.forEach(t=>surPay+=shiftH*SUR[t]);});
+    manObedy=daysTotal;
   } else {
     const cc=getCalCounts();
-    TYPES.forEach(t=>{const ov=manOverrides[t]||{};const days=ov.days!=null?ov.days:cc[t];const hours=ov.hours!=null?ov.hours:days*shiftH;daysTotal+=days;totalH+=hours;basePay+=hours*baseRate;surPay+=hours*SUR[t];});
+    TYPES.forEach(t=>{const ov=manOverrides[t]||{};const days=ov.days!=null?ov.days:cc[t];const hours=ov.hours!=null?ov.hours:days*shiftH;const ob=ov.obedy!=null?ov.obedy:days;daysTotal+=days;totalH+=hours;basePay+=hours*baseRate;surPay+=hours*SUR[t];manObedy+=ob;});
   }
+  const obedy=obedyOverride!=null?obedyOverride:manObedy;
   const gross=r2(basePay+surPay);
   const oop=useOOPEl.checked?200:0;
   const spBasis=Math.max(0,gross-oop);
@@ -396,34 +392,36 @@ function calc(){
   const nczd=useNCZDEl.checked?497.23:0;
   const taxable=Math.max(0,r2(taxBasis-nczd));
   const tax=r2(taxable*0.19);
-  const meal=r2(daysTotal*mealPrice);
+  const meal=r2(obedy*mealPrice);
   const net=r2(Math.max(0,gross-sp-tax-meal));
-  return{daysTotal,totalH,basePay,surPay,gross,oop,spBasis,sp,taxBasis,nczd,taxable,tax,meal,net,shiftH,baseRate,mealPrice};
+  return{daysTotal,totalH,basePay,surPay,gross,oop,spBasis,sp,taxBasis,nczd,taxable,tax,meal,net,shiftH,baseRate,mealPrice,obedy,manObedy};
 }
-
 function renderCalSummary(){
-  const cc=getCalCounts();
-  const shiftH=parseFloat(shiftHEl.value)||7.5;
+  const cc=getCalCounts(),shiftH=parseFloat(shiftHEl.value)||7.5;
   const sl=document.getElementById('calSummary');sl.innerHTML='';
-  const add=(label,days,hours,cls)=>{const el=document.createElement('div');el.className='srow'+(cls?' '+cls:'');el.innerHTML=`<span class="sk">${label}</span><span class="sv">${days} d\u00a0/\u00a0${fmtH(hours)}</span>`;sl.appendChild(el);};
+  const add=(label,days,hours,cls)=>{const el=document.createElement('div');el.className='srow'+(cls?' '+cls:'');el.innerHTML=`<span class="sk">${label}</span><span class="sv">${days}\u00a0d\u00a0/\u00a0${fmtH(hours)}</span>`;sl.appendChild(el);};
   TYPES.forEach(t=>add(LABELS[t],cc[t],cc[t]*shiftH));
   const total=Object.keys(shifts).length;
   add('Spolu dní',total,total*shiftH,'tr');
   const comboDays=Object.values(shifts).filter(t=>t.length>1).length;
-  if(comboDays>0){const el=document.createElement('div');el.className='srow combo-note';el.innerHTML=`<span class="sk">⚠️ ${comboDays} dní má viac typov (príplatky sa sčítajú)</span>`;sl.appendChild(el);}
+  if(comboDays>0){const el=document.createElement('div');el.className='srow combo-note';el.innerHTML=`<span class="sk">⚠️ ${comboDays}\u00a0dní má viac typov</span>`;sl.appendChild(el);}
 }
-
+function updateObedyField(autoVal){
+  if(obedyOverride===null){obedyInput.value=autoVal;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');}
+  else{obedyInput.value=obedyOverride;obedyInput.classList.remove('auto-val');obedyInput.classList.add('user-val');}
+}
 function renderAll(){
   if(mode==='calendar')renderCalSummary();
   const d=calc();
+  updateObedyField(d.manObedy);
   const bd=document.getElementById('breakdown');bd.innerHTML='';
   const add=(label,val,sub,cls)=>{const el=document.createElement('div');el.className='brow'+(cls?' '+cls:'');el.innerHTML=`<div><div class="bk">${label}</div>${sub?`<div class="bsub">${sub}</div>`:''}</div><div class="bv">${val}</div>`;bd.appendChild(el);};
   add('Základná mzda',fmt(d.basePay),`${fmtH(d.totalH)} × ${d.baseRate.toFixed(2)}\u00a0€`);
   add('Príplatky',fmt(d.surPay),'sobota / nedeľa / sviatok / noc');
-  add('Hrubá mzda',fmt(d.gross),`${d.daysTotal} dní`,'hl');
-  add('Starobné + invalidné (7\u00a0%)','\u2212'+fmt(d.sp),`základ ${fmt(d.spBasis)} (OOP \u2212${fmt(d.oop)})`,'neg');
-  add('Daň z príjmu (19\u00a0%)','\u2212'+fmt(d.tax),`základ ${fmt(d.taxable)} (NČZD \u2212${fmt(d.nczd)})`,d.tax>0?'neg':'');
-  add('Stravné','\u2212'+fmt(d.meal),`${d.daysTotal} obedov × ${d.mealPrice.toFixed(2)}\u00a0€`,d.meal>0?'neg':'');
+  add('Hrubá mzda',fmt(d.gross),`${d.daysTotal}\u00a0dní`,'hl');
+  add('Starobné + invalidné\u00a07\u00a0%','\u2212'+fmt(d.sp),`základ\u00a0${fmt(d.spBasis)}\u00a0(OOP\u00a0\u2212${fmt(d.oop)})`,'neg');
+  add('Daň z príjmu\u00a019\u00a0%','\u2212'+fmt(d.tax),`základ\u00a0${fmt(d.taxable)}\u00a0(NČZD\u00a0\u2212${fmt(d.nczd)})`,d.tax>0?'neg':'');
+  add('Stravné','\u2212'+fmt(d.meal),`${d.obedy}\u00a0obedov × ${d.mealPrice.toFixed(2)}\u00a0€${obedyOverride!=null?' · ✏️ ručne':''}`,d.meal>0?'neg':'');
   document.getElementById('netPay').textContent=fmt(d.net);
   document.getElementById('grossLine').textContent='z hrubej mzdy '+fmt(d.gross);
   const pw=document.getElementById('pillsWrap');pw.innerHTML='';
@@ -432,9 +430,9 @@ function renderAll(){
   addPill(useNCZDEl.checked&&d.tax===0?'Daň 0,00 €':useNCZDEl.checked?'NČZD ✓':'NČZD ✗',useNCZDEl.checked&&d.tax===0);
   if(d.gross>0)addPill(Math.round(d.net/d.gross*100)+'% na ruke',false);
   if(d.gross>0){const g=d.gross;document.getElementById('snet').style.width=(d.net/g*100)+'%';document.getElementById('ssp').style.width=(d.sp/g*100)+'%';document.getElementById('stax').style.width=(d.tax/g*100)+'%';document.getElementById('smeal').style.width=(d.meal/g*100)+'%';document.getElementById('progPct').textContent=Math.round(d.net/d.gross*100)+'% čistá';}
+  else{['snet','ssp','stax','smeal'].forEach(id=>document.getElementById(id).style.width='0%');document.getElementById('progPct').textContent='';}
   save();
 }
-
 [shiftHEl,baseRateEl,mealEl].forEach(el=>el.addEventListener('input',()=>{if(mode==='manual')buildManualTable();renderAll();}));
 [useOOPEl,useNCZDEl].forEach(el=>el.addEventListener('change',renderAll));
 renderAll();
