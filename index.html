@@ -145,6 +145,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .maction.del{color:var(--warn);border-color:rgba(150,66,25,.3)}
 .maction.del:hover{background:rgba(150,66,25,.07)}
 .maction.cancel{color:var(--muted)}
+/* GOAL CARD */
 .goal-layout{display:grid;gap:16px;grid-template-columns:1fr}
 @media(min-width:680px){.goal-layout{grid-template-columns:1fr 1fr}}
 .goal-label{font-size:.84rem;font-weight:600;color:var(--text)}
@@ -241,13 +242,14 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
       <p class="ctitle" style="margin-bottom:14px">Výpočet mzdy</p>
       <div class="blist" id="breakdown"></div>
     </div>
+    <!-- CIEĽOVÁ VÝPLATA -->
     <div class="card span2" id="goalCard">
       <div class="card-header" style="margin-bottom:10px">
         <p class="ctitle">🎯 Cieľová výplata</p>
         <span style="font-size:.76rem;color:var(--faint)">Koľko zmien potrebuješ?</span>
       </div>
       <div class="goal-layout">
-        <div>
+        <div class="goal-input-col">
           <div class="goal-input-wrap">
             <label class="goal-label">Chcem dostať na účet</label>
             <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
@@ -474,6 +476,7 @@ function renderAll(){
 }
 [shiftHEl,baseRateEl,mealEl].forEach(el=>el.addEventListener('input',()=>{if(mode==='manual')buildManualTable();renderAll();calcGoal();}));
 [useOOPEl,useNCZDEl].forEach(el=>el.addEventListener('change',()=>{renderAll();calcGoal();}));
+/* ===== CIEĽOVÁ VÝPLATA ===== */
 const goalNetEl=document.getElementById('goalNet');
 const goalTypesEl=document.getElementById('goalTypes');
 const goalResultEl=document.getElementById('goalResult');
@@ -513,15 +516,16 @@ function calcGoal(){
   if(!targetNet||targetNet<=0){goalResultEl.innerHTML='<div class="goal-empty">Zadaj sumu a vyber typ zmeny</div>';return;}
   const sH=defaultShiftH();
   const bR=Math.max(5.259,parseFloat(baseRateEl.value)||6.5);
+  const mP=Math.max(0,parseFloat(mealEl.value)||0);
   const hours=solveHoursForNet(targetNet,goalType);
-  const shiftsN=Math.ceil(hours/sH);
-  const actualHours=shiftsN*sH;
+  const shifts=Math.ceil(hours/sH);
+  const actualHours=shifts*sH;
   const actualNet=r2(calcNetFromHoursGoal(actualHours,goalType));
   const diff=r2(actualNet-targetNet);
   const hourRate=bR+SUR[goalType];
   const grossApprox=r2(actualHours*hourRate);
   let html='';
-  html+=`<div class="goal-stat hl"><div><div class="gs-label">Počet zmien</div><div class="gs-sub">${shiftsN} × ${fmtH(sH)} = ${fmtH(actualHours)}</div></div><div class="gs-val">${shiftsN} zmien</div></div>`;
+  html+=`<div class="goal-stat hl"><div><div class="gs-label">Počet zmien</div><div class="gs-sub">${shifts} × ${fmtH(sH)} = ${fmtH(actualHours)}</div></div><div class="gs-val">${shifts} zmien</div></div>`;
   html+=`<div class="goal-stat"><div><div class="gs-label">Celkové hodiny</div><div class="gs-sub">zaokrúhlené nahor na celé zmeny</div></div><div class="gs-val">${fmtH(actualHours)}</div></div>`;
   html+=`<div class="goal-stat"><div><div class="gs-label">Hrubá mzda</div><div class="gs-sub">${fmtH(actualHours)} × ${hourRate.toFixed(2)}\u00a0€/h</div></div><div class="gs-val">${fmt(grossApprox)}</div></div>`;
   html+=`<div class="goal-stat${diff>0?' warn':''}"><div><div class="gs-label">Skutočná výplata</div><div class="gs-sub">${diff>0?'o\u00a0'+fmt(diff)+'\u00a0viac ako cieľ':'presne\u00a0'+fmt(actualNet)}</div></div><div class="gs-val">${fmt(actualNet)}</div></div>`;
@@ -533,4 +537,5 @@ renderAll();
 </script>
 </body>
 </html>
+
 
