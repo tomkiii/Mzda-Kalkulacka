@@ -68,7 +68,6 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .minput:focus{outline:none;border-color:var(--p)}
 .minput.manual-override{border-color:var(--warn);background:rgba(150,66,25,.05)}
 .hint-cell{font-size:.72rem;color:var(--faint);padding-left:2px;white-space:nowrap}
-.sync-row{display:flex;justify-content:flex-end;margin-top:10px}
 .sync-btn{font-size:.78rem;color:var(--p);padding:5px 12px;border:1px solid var(--border);border-radius:999px;background:var(--s2)}
 .sync-btn:hover{background:var(--psoft)}
 .meal-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:var(--s2);border:1px solid var(--border);margin-top:10px}
@@ -117,10 +116,18 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .notice{margin-top:10px;padding:9px 12px;background:var(--psoft);border:1px solid rgba(1,105,111,.18);border-radius:12px;font-size:.78rem;color:var(--muted);line-height:1.7}
 .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);z-index:999;align-items:center;justify-content:center}
 .modal-backdrop.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:22px;width:min(380px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:22px;width:min(400px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .modal h3{font-size:.98rem;margin-bottom:4px}
-.modal .mdate{font-size:.82rem;color:var(--muted);margin-bottom:16px;font-family:'DM Mono',monospace}
-.mcheck-list{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.modal .mdate{font-size:.82rem;color:var(--muted);margin-bottom:14px;font-family:'DM Mono',monospace}
+.modal-hours{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:14px;background:var(--s2);border:1.5px solid var(--border);margin-bottom:12px}
+.modal-hours label{flex:1;font-size:.87rem;font-weight:600}
+.modal-hours .hsub{font-size:.74rem;color:var(--faint);font-weight:400;margin-top:1px}
+.modal-hours input{width:74px;padding:7px 10px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'DM Mono',monospace;font-size:.9rem;text-align:center;font-weight:700;transition:border-color .15s}
+.modal-hours input:focus{outline:none;border-color:var(--p)}
+.modal-hours input.custom-h{border-color:var(--p);background:var(--psoft)}
+.reset-h{font-size:.8rem;color:var(--muted);padding:4px 8px;border:1px solid var(--border);border-radius:8px;background:var(--soft);transition:all .15s;white-space:nowrap}
+.reset-h:hover{color:var(--p);border-color:var(--p)}
+.mcheck-list{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
 .mcheck{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;border:2px solid var(--border);background:var(--s2);cursor:pointer;transition:all .15s;user-select:none}
 .mcheck:hover{border-color:var(--p)}
 .mcheck input[type=checkbox]{width:16px;height:16px;accent-color:var(--p);cursor:pointer;flex-shrink:0}
@@ -150,9 +157,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
     </div>
     <div class="hright">
       <div class="pill"><span>Zmena</span><input id="shiftH" type="number" min="1" max="16" step="0.5" value="7.5"><span>h</span></div>
-      <button class="tbtn" id="themeBtn" aria-label="Téma">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
+      <button class="tbtn" id="themeBtn" aria-label="Téma"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
     </div>
   </header>
   <div class="mode-tabs">
@@ -168,12 +173,10 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
       <div class="cal-layout">
         <div>
           <div id="calendar"></div>
-          <div class="notice">Klikni na deň → vyber <strong>jeden alebo viac typov</strong> (napr. Nedeľa + Sviatok zároveň). Sviatky SK 2026 sú prednastavené. Dáta sa ukladajú v prehliadači.</div>
+          <div class="notice">Klikni na deň → vyber typ zmeny a uprav hodiny ak treba. Štandardne sa doplní počet hodín zo zmeny navrchu. Sviatky SK 2026 sú prednastavené.</div>
         </div>
         <div>
-          <div class="legend">
-            <span class="ltag cn">Bežný deň</span><span class="ltag cs">Sobota</span><span class="ltag csu">Nedeľa</span><span class="ltag ch">Sviatok</span><span class="ltag cni">Noc</span>
-          </div>
+          <div class="legend"><span class="ltag cn">Bežný deň</span><span class="ltag cs">Sobota</span><span class="ltag csu">Nedeľa</span><span class="ltag ch">Sviatok</span><span class="ltag cni">Noc</span></div>
           <div class="slist" id="calSummary"></div>
         </div>
       </div>
@@ -218,26 +221,13 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
     <div class="card total-card span2">
       <p class="ctitle">Výplata na účet</p>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
-        <div>
-          <div class="net-amount" id="netPay">0,00 €</div>
-          <div class="net-sub" id="grossLine">z hrubej mzdy 0,00 €</div>
-        </div>
+        <div><div class="net-amount" id="netPay">0,00 €</div><div class="net-sub" id="grossLine">z hrubej mzdy 0,00 €</div></div>
         <div id="pillsWrap" style="display:flex;flex-direction:column;align-items:flex-end;gap:5px"></div>
       </div>
       <div class="prog-wrap">
         <div class="prog-meta"><span>Rozdelenie hrubej mzdy</span><span id="progPct"></span></div>
-        <div class="prog-track">
-          <div class="seg snet" id="snet" style="width:0%"></div>
-          <div class="seg ssp" id="ssp" style="width:0%"></div>
-          <div class="seg stax" id="stax" style="width:0%"></div>
-          <div class="seg smeal" id="smeal" style="width:0%"></div>
-        </div>
-        <div class="plegend">
-          <span><span class="pdot" style="background:rgba(109,170,69,.9)"></span>Čistá mzda</span>
-          <span><span class="pdot" style="background:rgba(187,101,59,.9)"></span>Odvody SP</span>
-          <span><span class="pdot" style="background:rgba(209,99,167,.85)"></span>Daň</span>
-          <span><span class="pdot" style="background:rgba(232,175,52,.9)"></span>Stravné</span>
-        </div>
+        <div class="prog-track"><div class="seg snet" id="snet" style="width:0%"></div><div class="seg ssp" id="ssp" style="width:0%"></div><div class="seg stax" id="stax" style="width:0%"></div><div class="seg smeal" id="smeal" style="width:0%"></div></div>
+        <div class="plegend"><span><span class="pdot" style="background:rgba(109,170,69,.9)"></span>Čistá mzda</span><span><span class="pdot" style="background:rgba(187,101,59,.9)"></span>Odvody SP</span><span><span class="pdot" style="background:rgba(209,99,167,.85)"></span>Daň</span><span><span class="pdot" style="background:rgba(232,175,52,.9)"></span>Stravné</span></div>
       </div>
     </div>
   </div>
@@ -246,6 +236,11 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
   <div class="modal">
     <h3>Typ zmeny</h3>
     <div class="mdate" id="modalDate"></div>
+    <div class="modal-hours">
+      <div><label style="display:block;font-size:.87rem;font-weight:600">⏱ Hodiny zmeny</label><div class="hsub">Auto z nastavení · prepíš ak treba</div></div>
+      <input id="modalHours" type="number" min="0.5" max="16" step="0.5" value="7.5">
+      <button class="reset-h" id="resetModalH">↺ Auto</button>
+    </div>
     <div class="mcheck-list" id="modalChecks"></div>
     <div class="modal-actions">
       <button class="maction del" id="modalDel">🗑 Zmazať</button>
@@ -274,8 +269,10 @@ const SK_HOL=['2026-01-01','2026-01-06','2026-04-03','2026-04-06','2026-05-01','
 const r2=n=>Math.round(n*100)/100;
 const fmt=n=>n.toFixed(2).replace('.',',')+'\u00a0€';
 const fmtH=n=>n.toFixed(1).replace('.',',')+'\u00a0h';
-const stored=JSON.parse(localStorage.getItem('mzda_v4')||'{}');
-const shifts=stored.shifts||{};
+const stored=JSON.parse(localStorage.getItem('mzda_v5')||'{}');
+const rawShifts=stored.shifts||{};
+const shifts={};
+for(const [d,v] of Object.entries(rawShifts)){if(Array.isArray(v))shifts[d]={types:v,hours:null};else shifts[d]=v;}
 const cfg=stored.cfg||{};
 const manOverrides=stored.manOverrides||{};
 let obedyOverride=stored.obedyOverride!=null?stored.obedyOverride:null;
@@ -290,7 +287,8 @@ if(cfg.baseRate)baseRateEl.value=cfg.baseRate;
 if(cfg.meal)mealEl.value=cfg.meal;
 if(typeof cfg.oop==='boolean')useOOPEl.checked=cfg.oop;
 if(typeof cfg.nczd==='boolean')useNCZDEl.checked=cfg.nczd;
-function save(){localStorage.setItem('mzda_v4',JSON.stringify({shifts,manOverrides,obedyOverride,cfg:{shift:shiftHEl.value,baseRate:baseRateEl.value,meal:mealEl.value,oop:useOOPEl.checked,nczd:useNCZDEl.checked}}));}
+function save(){localStorage.setItem('mzda_v5',JSON.stringify({shifts,manOverrides,obedyOverride,cfg:{shift:shiftHEl.value,baseRate:baseRateEl.value,meal:mealEl.value,oop:useOOPEl.checked,nczd:useNCZDEl.checked}}));}
+function defaultShiftH(){return Math.max(0.5,parseFloat(shiftHEl.value)||7.5);}
 obedyInput.addEventListener('input',()=>{const v=parseInt(obedyInput.value);obedyOverride=isNaN(v)?null:v;obedyInput.classList.toggle('auto-val',obedyOverride===null);obedyInput.classList.toggle('user-val',obedyOverride!==null);save();renderAll();});
 document.getElementById('resetObedy').addEventListener('click',()=>{obedyOverride=null;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');save();renderAll();});
 document.getElementById('resetCal').addEventListener('click',()=>{if(!confirm('Naozaj zmazať všetky dni z kalendára?'))return;Object.keys(shifts).forEach(k=>delete shifts[k]);obedyOverride=null;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');save();refreshCal();renderAll();});
@@ -299,27 +297,31 @@ const tabCal=document.getElementById('tabCal'),tabMan=document.getElementById('t
 const calPanel=document.getElementById('calPanel'),manPanel=document.getElementById('manPanel');
 tabCal.addEventListener('click',()=>{mode='calendar';tabCal.classList.add('active');tabMan.classList.remove('active');calPanel.style.display='';manPanel.style.display='none';renderAll();});
 tabMan.addEventListener('click',()=>{mode='manual';tabMan.classList.add('active');tabCal.classList.remove('active');manPanel.style.display='';calPanel.style.display='none';buildManualTable();renderAll();});
-let calendar;
 function typeColor(types){if(types.includes('holiday'))return COLORS.holiday;if(types.includes('night'))return COLORS.night;if(types.includes('sunday'))return COLORS.sunday;if(types.includes('saturday'))return COLORS.saturday;return COLORS.normal;}
-function typeLabel(types){if(types.length===1)return LABELS[types[0]];return types.map(t=>ICONS[t]).join('');}
-function buildCalEvents(){return Object.entries(shifts).map(([date,types])=>({id:date,title:typeLabel(types),start:date,allDay:true,backgroundColor:typeColor(types),borderColor:'transparent'}));}
+function typeLabel(dateStr){const s=shifts[dateStr];if(!s)return '';const types=s.types;const icon=types.length===1?LABELS[types[0]]:types.map(t=>ICONS[t]).join('');return s.hours!=null?`${icon} ${s.hours}h`:icon;}
+function buildCalEvents(){return Object.keys(shifts).map(date=>({id:date,title:typeLabel(date),start:date,allDay:true,backgroundColor:typeColor(shifts[date].types),borderColor:'transparent'}));}
 function refreshCal(){if(!calendar)return;calendar.removeAllEvents();buildCalEvents().forEach(e=>calendar.addEvent(e));}
 const modalEl=document.getElementById('modal'),modalDateEl=document.getElementById('modalDate'),modalChecks=document.getElementById('modalChecks');
-let pendingDate=null,checkState={};
+const modalHoursEl=document.getElementById('modalHours'),resetModalH=document.getElementById('resetModalH');
+let pendingDate=null,checkState={},modalHoursCustom=false;
 function openModal(dateStr){
   pendingDate=dateStr;
   const d=new Date(dateStr+'T00:00:00');
   const days=['nedeľa','pondelok','utorok','streda','štvrtok','piatok','sobota'];
   modalDateEl.textContent=days[d.getDay()]+' '+d.toLocaleDateString('sk-SK',{day:'numeric',month:'long',year:'numeric'});
-  const existing=shifts[dateStr]||[];
+  const existing=shifts[dateStr];const defH=defaultShiftH();
+  if(existing&&existing.hours!=null){modalHoursEl.value=existing.hours;modalHoursCustom=true;modalHoursEl.classList.add('custom-h');resetModalH.style.display='';}
+  else{modalHoursEl.value=defH;modalHoursCustom=false;modalHoursEl.classList.remove('custom-h');resetModalH.style.display='none';}
   const isHol=SK_HOL.includes(dateStr),dow=d.getDay();
   checkState={};
-  if(existing.length>0){existing.forEach(t=>checkState[t]=true);}
+  if(existing&&existing.types.length>0){existing.types.forEach(t=>checkState[t]=true);}
   else{if(isHol)checkState.holiday=true;if(dow===0)checkState.sunday=true;if(dow===6)checkState.saturday=true;if(!isHol&&dow!==0&&dow!==6)checkState.normal=true;}
   renderModalChecks();
   document.getElementById('modalDel').style.display=shifts[dateStr]?'':'none';
   modalEl.classList.add('open');
 }
+modalHoursEl.addEventListener('input',()=>{modalHoursCustom=true;modalHoursEl.classList.add('custom-h');resetModalH.style.display='';});
+resetModalH.addEventListener('click',()=>{modalHoursCustom=false;modalHoursEl.value=defaultShiftH();modalHoursEl.classList.remove('custom-h');resetModalH.style.display='none';});
 function renderModalChecks(){
   modalChecks.innerHTML='';
   const surL={normal:'+0,00\u00a0€/h',saturday:'+2,63\u00a0€/h',sunday:'+5,26\u00a0€/h',holiday:'+5,26\u00a0€/h',night:'+2,10\u00a0€/h'};
@@ -341,8 +343,10 @@ document.getElementById('modalDel').addEventListener('click',()=>{delete shifts[
 document.getElementById('modalSave').addEventListener('click',()=>{
   const selected=TYPES.filter(t=>checkState[t]);
   if(selected.length===0){alert('Vyber aspoň jeden typ zmeny.');return;}
-  shifts[pendingDate]=selected;closeModal();save();refreshCal();renderAll();
+  const h=modalHoursCustom?parseFloat(modalHoursEl.value)||null:null;
+  shifts[pendingDate]={types:selected,hours:h};closeModal();save();refreshCal();renderAll();
 });
+let calendar;
 calendar=new FullCalendar.Calendar(document.getElementById('calendar'),{
   initialView:'dayGridMonth',firstDay:1,height:'auto',locale:'sk',
   headerToolbar:{left:'prev,next today',center:'title',right:''},
@@ -351,60 +355,49 @@ calendar=new FullCalendar.Calendar(document.getElementById('calendar'),{
   dayCellDidMount:arg=>{const ds=arg.date.toISOString().slice(0,10);if(SK_HOL.includes(ds))arg.el.style.background='rgba(161,44,123,.04)';}
 });
 calendar.render();
-function getCalCounts(){const c={normal:0,saturday:0,sunday:0,holiday:0,night:0};Object.values(shifts).forEach(types=>types.forEach(t=>c[t]=(c[t]||0)+1));return c;}
+function getCalStats(){const stats={};TYPES.forEach(t=>stats[t]={days:0,hours:0});for(const [,s] of Object.entries(shifts)){const h=s.hours!=null?s.hours:defaultShiftH();s.types.forEach(t=>{stats[t].days++;stats[t].hours+=h;});}return stats;}
+function calTotals(){let days=0,hours=0;for(const s of Object.values(shifts)){days++;hours+=(s.hours!=null?s.hours:defaultShiftH());}return{days,hours};}
 function buildManualTable(){
-  const shiftH=parseFloat(shiftHEl.value)||7.5;
-  const calCounts=getCalCounts();
+  const defH=defaultShiftH();const stats=getCalStats();
   const tbody=document.getElementById('manualBody');tbody.innerHTML='';
   TYPES.forEach(t=>{
-    const calDays=calCounts[t],ov=manOverrides[t]||{};
-    const days=ov.days!=null?ov.days:calDays;
-    const hours=ov.hours!=null?ov.hours:(days*shiftH);
-    const obedy=ov.obedy!=null?ov.obedy:days;
+    const ov=manOverrides[t]||{};const calDays=stats[t].days;const calHours=stats[t].hours;
+    const days=ov.days!=null?ov.days:calDays;const hours=ov.hours!=null?ov.hours:(calHours||days*defH);const obedy=ov.obedy!=null?ov.obedy:days;
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><span class="type-label"><span class="type-dot" style="background:${DOT[t]}"></span>${LABELS[t]}</span></td><td><input class="minput mdays${ov.days!=null?' manual-override':''}" type="number" min="0" step="1" value="${days}"></td><td><input class="minput mhours${ov.hours!=null?' manual-override':''}" type="number" min="0" step="0.5" value="${hours.toFixed(1)}"></td><td><input class="minput mobedy${ov.obedy!=null?' manual-override':''}" type="number" min="0" step="1" value="${obedy}"></td><td><span class="hint-cell" style="color:${calDays>0?'var(--p)':'var(--faint)'}">${calDays>0?calDays+'d':''}</span></td>`;
     tbody.appendChild(tr);
     const dI=tr.querySelector('.mdays'),hI=tr.querySelector('.mhours'),oI=tr.querySelector('.mobedy');
-    dI.addEventListener('input',()=>{const v=parseFloat(dI.value)||0;if(!manOverrides[t])manOverrides[t]={};manOverrides[t].days=v;if(manOverrides[t].hours==null)hI.value=(v*(parseFloat(shiftHEl.value)||7.5)).toFixed(1);if(manOverrides[t].obedy==null)oI.value=v;dI.classList.add('manual-override');save();renderAll();});
+    dI.addEventListener('input',()=>{const v=parseFloat(dI.value)||0;if(!manOverrides[t])manOverrides[t]={};manOverrides[t].days=v;if(manOverrides[t].hours==null)hI.value=(v*defH).toFixed(1);if(manOverrides[t].obedy==null)oI.value=v;dI.classList.add('manual-override');save();renderAll();});
     hI.addEventListener('input',()=>{if(!manOverrides[t])manOverrides[t]={};manOverrides[t].hours=parseFloat(hI.value)||0;hI.classList.add('manual-override');save();renderAll();});
     oI.addEventListener('input',()=>{if(!manOverrides[t])manOverrides[t]={};manOverrides[t].obedy=parseInt(oI.value)||0;oI.classList.add('manual-override');save();renderAll();});
   });
 }
 document.getElementById('syncFromCal').addEventListener('click',()=>{TYPES.forEach(t=>delete manOverrides[t]);save();buildManualTable();renderAll();});
 function calc(){
-  const shiftH=Math.max(0.5,parseFloat(shiftHEl.value)||7.5);
-  const baseRate=Math.max(5.259,parseFloat(baseRateEl.value)||6.5);
-  const mealPrice=Math.max(0,parseFloat(mealEl.value)||0);
+  const defH=defaultShiftH();const baseRate=Math.max(5.259,parseFloat(baseRateEl.value)||6.5);const mealPrice=Math.max(0,parseFloat(mealEl.value)||0);
   let basePay=0,surPay=0,daysTotal=0,totalH=0,manObedy=0;
   if(mode==='calendar'){
-    Object.values(shifts).forEach(types=>{daysTotal++;totalH+=shiftH;basePay+=shiftH*baseRate;types.forEach(t=>surPay+=shiftH*SUR[t]);});
+    for(const [,s] of Object.entries(shifts)){const h=s.hours!=null?s.hours:defH;daysTotal++;totalH+=h;basePay+=h*baseRate;s.types.forEach(t=>surPay+=h*SUR[t]);}
     manObedy=daysTotal;
   } else {
-    const cc=getCalCounts();
-    TYPES.forEach(t=>{const ov=manOverrides[t]||{};const days=ov.days!=null?ov.days:cc[t];const hours=ov.hours!=null?ov.hours:days*shiftH;const ob=ov.obedy!=null?ov.obedy:days;daysTotal+=days;totalH+=hours;basePay+=hours*baseRate;surPay+=hours*SUR[t];manObedy+=ob;});
+    const stats=getCalStats();
+    TYPES.forEach(t=>{const ov=manOverrides[t]||{};const days=ov.days!=null?ov.days:stats[t].days;const hours=ov.hours!=null?ov.hours:(stats[t].hours||days*defH);const ob=ov.obedy!=null?ov.obedy:days;daysTotal+=days;totalH+=hours;basePay+=hours*baseRate;surPay+=hours*SUR[t];manObedy+=ob;});
   }
   const obedy=obedyOverride!=null?obedyOverride:manObedy;
-  const gross=r2(basePay+surPay);
-  const oop=useOOPEl.checked?200:0;
-  const spBasis=Math.max(0,gross-oop);
-  const sp=r2(spBasis*0.04)+r2(spBasis*0.03);
-  const taxBasis=r2(gross-sp);
-  const nczd=useNCZDEl.checked?497.23:0;
-  const taxable=Math.max(0,r2(taxBasis-nczd));
-  const tax=r2(taxable*0.19);
-  const meal=r2(obedy*mealPrice);
+  const gross=r2(basePay+surPay);const oop=useOOPEl.checked?200:0;const spBasis=Math.max(0,gross-oop);
+  const sp=r2(spBasis*0.04)+r2(spBasis*0.03);const taxBasis=r2(gross-sp);const nczd=useNCZDEl.checked?497.23:0;
+  const taxable=Math.max(0,r2(taxBasis-nczd));const tax=r2(taxable*0.19);const meal=r2(obedy*mealPrice);
   const net=r2(Math.max(0,gross-sp-tax-meal));
-  return{daysTotal,totalH,basePay,surPay,gross,oop,spBasis,sp,taxBasis,nczd,taxable,tax,meal,net,shiftH,baseRate,mealPrice,obedy,manObedy};
+  return{daysTotal,totalH,basePay,surPay,gross,sp,spBasis,nczd,taxable,tax,meal,net,baseRate,mealPrice,obedy,manObedy};
 }
 function renderCalSummary(){
-  const cc=getCalCounts(),shiftH=parseFloat(shiftHEl.value)||7.5;
-  const sl=document.getElementById('calSummary');sl.innerHTML='';
-  const add=(label,days,hours,cls)=>{const el=document.createElement('div');el.className='srow'+(cls?' '+cls:'');el.innerHTML=`<span class="sk">${label}</span><span class="sv">${days}\u00a0d\u00a0/\u00a0${fmtH(hours)}</span>`;sl.appendChild(el);};
-  TYPES.forEach(t=>add(LABELS[t],cc[t],cc[t]*shiftH));
-  const total=Object.keys(shifts).length;
-  add('Spolu dní',total,total*shiftH,'tr');
-  const comboDays=Object.values(shifts).filter(t=>t.length>1).length;
-  if(comboDays>0){const el=document.createElement('div');el.className='srow combo-note';el.innerHTML=`<span class="sk">⚠️ ${comboDays}\u00a0dní má viac typov</span>`;sl.appendChild(el);}
+  const stats=getCalStats();const sl=document.getElementById('calSummary');sl.innerHTML='';
+  TYPES.forEach(t=>{const s=stats[t];const el=document.createElement('div');el.className='srow';el.innerHTML=`<span class="sk">${LABELS[t]}</span><span class="sv">${s.days}\u00a0d\u00a0/\u00a0${fmtH(s.hours)}</span>`;sl.appendChild(el);});
+  const tot=calTotals();const el2=document.createElement('div');el2.className='srow tr';el2.innerHTML=`<span class="sk">Spolu dní</span><span class="sv">${tot.days}\u00a0d\u00a0/\u00a0${fmtH(tot.hours)}</span>`;sl.appendChild(el2);
+  const customH=Object.values(shifts).filter(s=>s.hours!=null).length;
+  if(customH>0){const el3=document.createElement('div');el3.className='srow combo-note';el3.innerHTML=`<span class="sk">✏️ ${customH}\u00a0dní má upravené hodiny</span>`;sl.appendChild(el3);}
+  const comboDays=Object.values(shifts).filter(s=>s.types.length>1).length;
+  if(comboDays>0){const el4=document.createElement('div');el4.className='srow combo-note';el4.innerHTML=`<span class="sk">⚠️ ${comboDays}\u00a0dní má viac typov</span>`;sl.appendChild(el4);}
 }
 function updateObedyField(autoVal){
   if(obedyOverride===null){obedyInput.value=autoVal;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');}
@@ -412,14 +405,13 @@ function updateObedyField(autoVal){
 }
 function renderAll(){
   if(mode==='calendar')renderCalSummary();
-  const d=calc();
-  updateObedyField(d.manObedy);
+  const d=calc();updateObedyField(d.manObedy);
   const bd=document.getElementById('breakdown');bd.innerHTML='';
   const add=(label,val,sub,cls)=>{const el=document.createElement('div');el.className='brow'+(cls?' '+cls:'');el.innerHTML=`<div><div class="bk">${label}</div>${sub?`<div class="bsub">${sub}</div>`:''}</div><div class="bv">${val}</div>`;bd.appendChild(el);};
   add('Základná mzda',fmt(d.basePay),`${fmtH(d.totalH)} × ${d.baseRate.toFixed(2)}\u00a0€`);
   add('Príplatky',fmt(d.surPay),'sobota / nedeľa / sviatok / noc');
   add('Hrubá mzda',fmt(d.gross),`${d.daysTotal}\u00a0dní`,'hl');
-  add('Starobné + invalidné\u00a07\u00a0%','\u2212'+fmt(d.sp),`základ\u00a0${fmt(d.spBasis)}\u00a0(OOP\u00a0\u2212${fmt(d.oop)})`,'neg');
+  add('Starobné + invalidné\u00a07\u00a0%','\u2212'+fmt(d.sp),`základ po OOP\u00a0${fmt(d.spBasis)}`,'neg');
   add('Daň z príjmu\u00a019\u00a0%','\u2212'+fmt(d.tax),`základ\u00a0${fmt(d.taxable)}\u00a0(NČZD\u00a0\u2212${fmt(d.nczd)})`,d.tax>0?'neg':'');
   add('Stravné','\u2212'+fmt(d.meal),`${d.obedy}\u00a0obedov × ${d.mealPrice.toFixed(2)}\u00a0€${obedyOverride!=null?' · ✏️ ručne':''}`,d.meal>0?'neg':'');
   document.getElementById('netPay').textContent=fmt(d.net);
