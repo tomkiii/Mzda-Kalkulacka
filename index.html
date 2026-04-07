@@ -668,9 +668,5 @@ renderAll();
 })();
 </script>
 </body>
-</html>"""
+</html>
 
-Path('/root/output/index.html').write_text(html, encoding='utf-8')
-print('OK', len(html), 'bytes')
-for c in ['beforeinstallprompt','applyTplBtn','savedTemplates','buildTplGrid','tplGrid','installBtn','calcGoal','solveHoursForNet']:
-    print(c, '✓' if c in html else '✗ MISSING')
