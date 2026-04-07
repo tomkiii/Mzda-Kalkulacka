@@ -145,6 +145,30 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .maction.del{color:var(--warn);border-color:rgba(150,66,25,.3)}
 .maction.del:hover{background:rgba(150,66,25,.07)}
 .maction.cancel{color:var(--muted)}
+/* GOAL CARD */
+.goal-layout{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:680px){.goal-layout{grid-template-columns:1fr 1fr}}
+.goal-label{font-size:.84rem;font-weight:600;color:var(--text)}
+.goal-input{width:130px;padding:10px 13px;border:1.5px solid var(--border);border-radius:12px;background:var(--s2);font-family:'DM Mono',monospace;font-size:1rem;font-weight:700;text-align:center;transition:border-color .15s}
+.goal-input:focus{outline:none;border-color:var(--p)}
+.goal-types{display:flex;flex-wrap:wrap;gap:6px}
+.gtype{padding:7px 12px;border-radius:999px;border:1.5px solid var(--border);background:var(--s2);font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px}
+.gtype.active{color:#fff}
+.gtype-normal.active{background:#437a22;border-color:#437a22}
+.gtype-saturday.active{background:#da7101;border-color:#da7101}
+.gtype-sunday.active{background:#01696f;border-color:#01696f}
+.gtype-holiday.active{background:#a12c7b;border-color:#a12c7b}
+.gtype-night.active{background:#006494;border-color:#006494}
+.goal-result{display:flex;flex-direction:column;gap:8px;justify-content:center}
+.goal-empty{font-size:.85rem;color:var(--faint);padding:16px 0}
+.goal-stat{display:flex;justify-content:space-between;align-items:flex-start;padding:11px 14px;border-radius:13px;background:var(--s2);border:1px solid var(--border)}
+.goal-stat .gs-label{font-size:.84rem;color:var(--muted)}
+.goal-stat .gs-sub{font-size:.72rem;color:var(--faint);margin-top:2px}
+.goal-stat .gs-val{font-family:'DM Mono',monospace;font-weight:800;font-size:1.05rem;color:var(--text);white-space:nowrap}
+.goal-stat.hl{background:var(--psoft);border-color:rgba(1,105,111,.2)}
+.goal-stat.hl .gs-label,.goal-stat.hl .gs-val{color:var(--p)}
+.goal-stat.warn{background:rgba(218,113,1,.07);border-color:rgba(218,113,1,.25)}
+.goal-stat.warn .gs-label,.goal-stat.warn .gs-val{color:#9a5600}
 @media(max-width:600px){#calendar{min-height:400px}.minput{width:62px}}
 </style>
 </head>
@@ -217,6 +241,31 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
     <div class="card">
       <p class="ctitle" style="margin-bottom:14px">Výpočet mzdy</p>
       <div class="blist" id="breakdown"></div>
+    </div>
+    <!-- CIEĽOVÁ VÝPLATA -->
+    <div class="card span2" id="goalCard">
+      <div class="card-header" style="margin-bottom:10px">
+        <p class="ctitle">🎯 Cieľová výplata</p>
+        <span style="font-size:.76rem;color:var(--faint)">Koľko zmien potrebuješ?</span>
+      </div>
+      <div class="goal-layout">
+        <div class="goal-input-col">
+          <div class="goal-input-wrap">
+            <label class="goal-label">Chcem dostať na účet</label>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+              <input id="goalNet" type="number" min="0" step="1" placeholder="napr. 500" class="goal-input">
+              <span style="font-size:.88rem;color:var(--muted);white-space:nowrap">€ čistého</span>
+            </div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="goal-label" style="margin-bottom:7px">Typ zmeny pre výpočet</div>
+            <div class="goal-types" id="goalTypes"></div>
+          </div>
+        </div>
+        <div class="goal-result" id="goalResult">
+          <div class="goal-empty">Zadaj sumu a vyber typ zmeny</div>
+        </div>
+      </div>
     </div>
     <div class="card total-card span2">
       <p class="ctitle">Výplata na účet</p>
@@ -385,8 +434,8 @@ function calc(){
   }
   const obedy=obedyOverride!=null?obedyOverride:manObedy;
   const gross=r2(basePay+surPay);const oop=useOOPEl.checked?200:0;const spBasis=Math.max(0,gross-oop);
-  const sp=r2(spBasis*0.04)+r2(spBasis*0.03);const taxBasis=r2(gross-sp);const nczd=useNCZDEl.checked?497.23:0;
-  const taxable=Math.max(0,r2(taxBasis-nczd));const tax=r2(taxable*0.19);const meal=r2(obedy*mealPrice);
+  const sp=r2(spBasis*0.07);const nczd=useNCZDEl.checked?497.23:0;
+  const taxable=Math.max(0,r2(gross-sp-nczd));const tax=r2(taxable*0.19);const meal=r2(obedy*mealPrice);
   const net=r2(Math.max(0,gross-sp-tax-meal));
   return{daysTotal,totalH,basePay,surPay,gross,sp,spBasis,nczd,taxable,tax,meal,net,baseRate,mealPrice,obedy,manObedy};
 }
@@ -425,10 +474,67 @@ function renderAll(){
   else{['snet','ssp','stax','smeal'].forEach(id=>document.getElementById(id).style.width='0%');document.getElementById('progPct').textContent='';}
   save();
 }
-[shiftHEl,baseRateEl,mealEl].forEach(el=>el.addEventListener('input',()=>{if(mode==='manual')buildManualTable();renderAll();}));
-[useOOPEl,useNCZDEl].forEach(el=>el.addEventListener('change',renderAll));
+[shiftHEl,baseRateEl,mealEl].forEach(el=>el.addEventListener('input',()=>{if(mode==='manual')buildManualTable();renderAll();calcGoal();}));
+[useOOPEl,useNCZDEl].forEach(el=>el.addEventListener('change',()=>{renderAll();calcGoal();}));
+/* ===== CIEĽOVÁ VÝPLATA ===== */
+const goalNetEl=document.getElementById('goalNet');
+const goalTypesEl=document.getElementById('goalTypes');
+const goalResultEl=document.getElementById('goalResult');
+let goalType='normal';
+const GOAL_TYPE_LABELS={normal:'Bežný',saturday:'Sobota',sunday:'Nedeľa',holiday:'Sviatok',night:'Noc'};
+TYPES.forEach(t=>{
+  const btn=document.createElement('button');
+  btn.className=`gtype gtype-${t}${t==='normal'?' active':''}`;
+  btn.innerHTML=`${ICONS[t]} ${GOAL_TYPE_LABELS[t]}`;
+  btn.addEventListener('click',()=>{goalType=t;goalTypesEl.querySelectorAll('.gtype').forEach(b=>b.classList.remove('active'));btn.classList.add('active');calcGoal();});
+  goalTypesEl.appendChild(btn);
+});
+function calcNetFromHoursGoal(hours,type){
+  const bR=Math.max(5.259,parseFloat(baseRateEl.value)||6.5);
+  const mP=Math.max(0,parseFloat(mealEl.value)||0);
+  const sH=defaultShiftH();
+  const gross=r2(hours*(bR+SUR[type]));
+  const days=hours/sH;
+  const meal=r2(days*mP);
+  const oop=useOOPEl.checked?200:0;
+  const spBasis=Math.max(0,gross-oop);
+  const sp=r2(spBasis*0.07);
+  const nczd=useNCZDEl.checked?497.23:0;
+  const taxable=Math.max(0,r2(gross-sp-nczd));
+  const tax=r2(taxable*0.19);
+  return gross-sp-tax-meal;
+}
+function solveHoursForNet(targetNet,type){
+  if(targetNet<=0)return 0;
+  let lo=0,hi=5000;
+  if(calcNetFromHoursGoal(hi,type)<targetNet)hi=50000;
+  for(let i=0;i<80;i++){const mid=(lo+hi)/2;if(calcNetFromHoursGoal(mid,type)<targetNet)lo=mid;else hi=mid;}
+  return(lo+hi)/2;
+}
+function calcGoal(){
+  const targetNet=parseFloat(goalNetEl.value);
+  if(!targetNet||targetNet<=0){goalResultEl.innerHTML='<div class="goal-empty">Zadaj sumu a vyber typ zmeny</div>';return;}
+  const sH=defaultShiftH();
+  const bR=Math.max(5.259,parseFloat(baseRateEl.value)||6.5);
+  const mP=Math.max(0,parseFloat(mealEl.value)||0);
+  const hours=solveHoursForNet(targetNet,goalType);
+  const shifts=Math.ceil(hours/sH);
+  const actualHours=shifts*sH;
+  const actualNet=r2(calcNetFromHoursGoal(actualHours,goalType));
+  const diff=r2(actualNet-targetNet);
+  const hourRate=bR+SUR[goalType];
+  const grossApprox=r2(actualHours*hourRate);
+  let html='';
+  html+=`<div class="goal-stat hl"><div><div class="gs-label">Počet zmien</div><div class="gs-sub">${shifts} × ${fmtH(sH)} = ${fmtH(actualHours)}</div></div><div class="gs-val">${shifts} zmien</div></div>`;
+  html+=`<div class="goal-stat"><div><div class="gs-label">Celkové hodiny</div><div class="gs-sub">zaokrúhlené nahor na celé zmeny</div></div><div class="gs-val">${fmtH(actualHours)}</div></div>`;
+  html+=`<div class="goal-stat"><div><div class="gs-label">Hrubá mzda</div><div class="gs-sub">${fmtH(actualHours)} × ${hourRate.toFixed(2)}\u00a0€/h</div></div><div class="gs-val">${fmt(grossApprox)}</div></div>`;
+  html+=`<div class="goal-stat${diff>0?' warn':''}"><div><div class="gs-label">Skutočná výplata</div><div class="gs-sub">${diff>0?'o\u00a0'+fmt(diff)+'\u00a0viac ako cieľ':'presne\u00a0'+fmt(actualNet)}</div></div><div class="gs-val">${fmt(actualNet)}</div></div>`;
+  goalResultEl.innerHTML=html;
+}
+goalNetEl.addEventListener('input',calcGoal);
 renderAll();
 })();
 </script>
 </body>
 </html>
+
