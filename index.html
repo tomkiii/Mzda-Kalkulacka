@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mzdová Kalkulačka – DBPŠ 2026</title>
+<meta name="theme-color" content="#01696f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mzda">
+<link rel="manifest" href='application/manifest+json,{"name":"Mzdova kalkulacka","short_name":"Mzda 2026","start_url":"/","display":"standalone","background_color":"%23f7f6f2","theme_color":"%2301696f"}'>
+<title>Mzdova Kalkulacka 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js"></script>
 <style>
@@ -11,7 +15,7 @@
 [data-theme="dark"]{--bg:#171614;--surface:#1c1b19;--s2:#232220;--soft:#222120;--div:#262523;--border:#393836;--text:#cdccca;--muted:#797876;--faint:#5a5957;--p:#4f98a3;--p2:#227f8b;--psoft:rgba(79,152,163,.12);--ok:#6daa45;--warn:#bb653b;--err:#d163a7;--sh:0 1px 3px rgba(0,0,0,.25)}
 *{box-sizing:border-box;margin:0;padding:0}html{-webkit-font-smoothing:antialiased}
 body{min-height:100vh;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
-button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;border:none}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer;background:none;border:none}
 :focus-visible{outline:2px solid var(--p);outline-offset:3px;border-radius:6px}
 .app{max-width:1240px;margin:0 auto;padding:22px 14px 52px}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px;flex-wrap:wrap}
@@ -23,7 +27,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .pill{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:7px 12px;font-size:.8rem;color:var(--muted)}
 .pill input{width:52px;border:1px solid var(--border);background:var(--s2);border-radius:8px;padding:4px 7px;text-align:center;font-family:'DM Mono',monospace;font-size:.8rem}
 .pill input:focus{outline:none;border-color:var(--p)}
-.tbtn{width:36px;height:36px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center}
+.tbtn{width:36px;height:36px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:1rem}
 .mode-tabs{display:flex;gap:8px;margin-bottom:16px}
 .mtab{padding:8px 18px;border-radius:999px;border:1.5px solid var(--border);background:var(--surface);font-size:.85rem;font-weight:600;color:var(--muted);transition:all .15s}
 .mtab.active{background:var(--p);border-color:var(--p);color:#fff}
@@ -52,8 +56,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .cni{background:rgba(0,100,148,.12);color:#006494;border-color:rgba(0,100,148,.3)}
 .slist{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
 .srow{display:flex;justify-content:space-between;align-items:center;padding:8px 11px;border-radius:11px;background:var(--s2);border:1px solid var(--border)}
-.srow .sk{font-size:.86rem;color:var(--muted)}
-.srow .sv{font-family:'DM Mono',monospace;font-weight:700;font-size:.83rem}
+.srow .sk{font-size:.86rem;color:var(--muted)}.srow .sv{font-family:'DM Mono',monospace;font-weight:700;font-size:.83rem}
 .srow.tr{background:var(--psoft);border-color:rgba(1,105,111,.2)}.srow.tr .sk,.srow.tr .sv{color:var(--p)}
 .srow.combo-note{background:rgba(218,113,1,.06);border-color:rgba(218,113,1,.2)}.srow.combo-note .sk{color:#9a5600;font-size:.78rem}
 .manual-table{width:100%;border-collapse:collapse}
@@ -96,8 +99,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .rate-hint{font-size:.75rem;color:var(--faint);line-height:1.7}
 .blist{display:flex;flex-direction:column;gap:5px}
 .brow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:8px 11px;border-radius:11px;background:var(--s2);border:1px solid var(--border)}
-.brow .bk{font-size:.86rem;color:var(--muted)}
-.brow .bsub{font-size:.72rem;color:var(--faint);margin-top:1px}
+.brow .bk{font-size:.86rem;color:var(--muted)}.brow .bsub{font-size:.72rem;color:var(--faint);margin-top:1px}
 .brow .bv{font-family:'DM Mono',monospace;font-weight:700;font-size:.84rem;white-space:nowrap}
 .brow.neg .bv{color:var(--err)}
 .brow.hl{background:var(--psoft);border-color:rgba(1,105,111,.2)}.brow.hl .bk,.brow.hl .bv{color:var(--p);font-weight:700}
@@ -114,6 +116,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .plegend span{display:flex;align-items:center;gap:4px;font-size:.75rem;color:rgba(255,255,255,.6)}
 .pdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .notice{margin-top:10px;padding:9px 12px;background:var(--psoft);border:1px solid rgba(1,105,111,.18);border-radius:12px;font-size:.78rem;color:var(--muted);line-height:1.7}
+/* MODAL */
 .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);z-index:999;align-items:center;justify-content:center}
 .modal-backdrop.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:22px;width:min(400px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.2)}
@@ -145,7 +148,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .maction.del{color:var(--warn);border-color:rgba(150,66,25,.3)}
 .maction.del:hover{background:rgba(150,66,25,.07)}
 .maction.cancel{color:var(--muted)}
-/* GOAL CARD */
+/* GOAL */
 .goal-layout{display:grid;gap:16px;grid-template-columns:1fr}
 @media(min-width:680px){.goal-layout{grid-template-columns:1fr 1fr}}
 .goal-label{font-size:.84rem;font-weight:600;color:var(--text)}
@@ -162,13 +165,41 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
 .goal-result{display:flex;flex-direction:column;gap:8px;justify-content:center}
 .goal-empty{font-size:.85rem;color:var(--faint);padding:16px 0}
 .goal-stat{display:flex;justify-content:space-between;align-items:flex-start;padding:11px 14px;border-radius:13px;background:var(--s2);border:1px solid var(--border)}
-.goal-stat .gs-label{font-size:.84rem;color:var(--muted)}
-.goal-stat .gs-sub{font-size:.72rem;color:var(--faint);margin-top:2px}
+.goal-stat .gs-label{font-size:.84rem;color:var(--muted)}.goal-stat .gs-sub{font-size:.72rem;color:var(--faint);margin-top:2px}
 .goal-stat .gs-val{font-family:'DM Mono',monospace;font-weight:800;font-size:1.05rem;color:var(--text);white-space:nowrap}
 .goal-stat.hl{background:var(--psoft);border-color:rgba(1,105,111,.2)}
 .goal-stat.hl .gs-label,.goal-stat.hl .gs-val{color:var(--p)}
 .goal-stat.warn{background:rgba(218,113,1,.07);border-color:rgba(218,113,1,.25)}
 .goal-stat.warn .gs-label,.goal-stat.warn .gs-val{color:#9a5600}
+/* TEMPLATES */
+.tpl-layout{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:700px){.tpl-layout{grid-template-columns:1.2fr 1fr}}
+.tpl-grid{display:flex;flex-direction:column;gap:5px}
+.tpl-row{display:grid;grid-template-columns:95px 1fr 78px;gap:8px;align-items:center;padding:7px 10px;border-radius:11px;background:var(--s2);border:1px solid var(--border);transition:opacity .15s}
+.tpl-row.off{opacity:.42}
+.tpl-day{font-size:.85rem;font-weight:600}
+.tpl-select{padding:6px 8px;border:1px solid var(--border);border-radius:9px;background:var(--bg);font-size:.8rem;cursor:pointer}
+.tpl-select:focus{outline:none;border-color:var(--p)}
+.tpl-h{padding:6px 8px;border:1px solid var(--border);border-radius:9px;background:var(--bg);font-family:'DM Mono',monospace;font-size:.82rem;text-align:center;width:100%}
+.tpl-h:focus{outline:none;border-color:var(--p)}
+.tpl-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.tpl-btn{padding:8px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--s2);font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s}
+.tpl-btn:hover{border-color:var(--p);color:var(--p)}
+.tpl-btn.primary{background:var(--p);border-color:var(--p);color:#fff}
+.tpl-btn.primary:hover{background:var(--p2)}
+.tpl-name-row{display:flex;gap:8px;margin-top:8px}
+.tpl-name-input{flex:1;padding:8px 11px;border:1.5px solid var(--border);border-radius:11px;background:var(--s2);font-size:.84rem}
+.tpl-name-input:focus{outline:none;border-color:var(--p)}
+.saved-tpls{display:flex;flex-direction:column;gap:7px}
+.saved-tpl-row{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;background:var(--s2);border:1px solid var(--border)}
+.saved-tpl-name{flex:1;font-size:.86rem;font-weight:600}
+.saved-tpl-days{font-size:.75rem;color:var(--faint);margin-top:1px}
+.tpl-small-btn{font-size:.78rem;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--soft);color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+.tpl-small-btn:hover{color:var(--p);border-color:var(--p)}
+.tpl-del-btn{font-size:.78rem;padding:4px 8px;border-radius:8px;border:1px solid rgba(150,66,25,.25);color:var(--warn);background:rgba(150,66,25,.05);cursor:pointer;transition:all .15s}
+.tpl-del-btn:hover{background:rgba(150,66,25,.12)}
+.tpl-apply-info{font-size:.78rem;color:var(--p);padding:7px 10px;border-radius:10px;background:var(--psoft);border:1px solid rgba(1,105,111,.2);margin-top:6px;display:none}
+.saved-empty{font-size:.84rem;color:var(--faint);padding:12px 0}
 @media(max-width:600px){#calendar{min-height:400px}.minput{width:62px}}
 </style>
 </head>
@@ -177,98 +208,125 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
   <header class="header">
     <div class="logo">
       <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="var(--p)"/><path d="M11 13h18M11 19.5h12M11 26h8" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="28.5" cy="26.5" r="5.5" fill="var(--p)" stroke="#fff" stroke-width="2"/><path d="M26.5 26.5h4M28.5 24.5v4" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
-      <div><h1>Mzdová kalkulačka</h1><p>DBPŠ 2026 · kalendár alebo ručné zadanie</p></div>
+      <div><h1>Mzdova kalkulacka</h1><p>DBPS 2026 &middot; kalendar alebo rucne zadanie</p></div>
     </div>
     <div class="hright">
       <div class="pill"><span>Zmena</span><input id="shiftH" type="number" min="1" max="16" step="0.5" value="7.5"><span>h</span></div>
-      <button class="tbtn" id="themeBtn" aria-label="Téma"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+      <button class="tbtn" id="installBtn" aria-label="Pridat na plochu" style="display:none" title="Pridat na plochu">📲</button>
+      <button class="tbtn" id="themeBtn" aria-label="Tema"></button>
     </div>
   </header>
   <div class="mode-tabs">
-    <button class="mtab active" id="tabCal">📅 Kalendár</button>
-    <button class="mtab" id="tabMan">✏️ Ručné zadanie</button>
+    <button class="mtab active" id="tabCal">📅 Kalendar</button>
+    <button class="mtab" id="tabMan">✏️ Rucne zadanie</button>
   </div>
   <div class="grid">
+    <!-- KALENDAR -->
     <div class="card span2" id="calPanel">
       <div class="card-header">
-        <p class="ctitle">Kalendár zmien</p>
-        <button class="reset-btn" id="resetCal">🗑 Resetovať kalendár</button>
+        <p class="ctitle">Kalendar zmien</p>
+        <button class="reset-btn" id="resetCal">🗑 Resetovat kalendar</button>
       </div>
       <div class="cal-layout">
         <div>
           <div id="calendar"></div>
-          <div class="notice">Klikni na deň → vyber typ zmeny a uprav hodiny ak treba. Štandardne sa doplní počet hodín zo zmeny navrchu. Sviatky SK 2026 sú prednastavené.</div>
+          <div class="notice">Klikni na den → vyber typ zmeny a uprav hodiny. Sviatky SK 2026 su prednastavene.</div>
         </div>
         <div>
-          <div class="legend"><span class="ltag cn">Bežný deň</span><span class="ltag cs">Sobota</span><span class="ltag csu">Nedeľa</span><span class="ltag ch">Sviatok</span><span class="ltag cni">Noc</span></div>
+          <div class="legend"><span class="ltag cn">Bezny den</span><span class="ltag cs">Sobota</span><span class="ltag csu">Nedela</span><span class="ltag ch">Sviatok</span><span class="ltag cni">Noc</span></div>
           <div class="slist" id="calSummary"></div>
         </div>
       </div>
     </div>
+    <!-- RUCNE -->
     <div class="card span2" id="manPanel" style="display:none">
       <div class="card-header">
-        <p class="ctitle">Ručné zadanie dní a hodín</p>
-        <button class="sync-btn" id="syncFromCal" style="margin:0">↩ Načítať z kalendára</button>
+        <p class="ctitle">Rucne zadanie dni a hodin</p>
+        <button class="sync-btn" id="syncFromCal">↩ Nacitat z kalendara</button>
       </div>
       <table class="manual-table">
         <thead><tr><th>Typ zmeny</th><th>Dni</th><th>Hodiny</th><th>Obedy</th><th></th></tr></thead>
         <tbody id="manualBody"></tbody>
       </table>
     </div>
+    <!-- NASTAVENIA -->
     <div class="card">
       <p class="ctitle" style="margin-bottom:14px">Nastavenia</p>
-      <div class="frow"><label>Hodinová mzda</label><input id="baseRate" type="number" min="5.259" step="0.01" value="6.50"></div>
-      <div class="frow"><label>Cena jedného obeda</label><input id="mealPrice" type="number" min="0" step="0.01" value="1.00"></div>
+      <div class="frow"><label>Hodinova mzda</label><input id="baseRate" type="number" min="5.259" step="0.01" value="6.50"></div>
+      <div class="frow"><label>Cena jedneho obeda</label><input id="mealPrice" type="number" min="0" step="0.01" value="1.00"></div>
       <div class="meal-row">
-        <div class="meal-label">Počet obedov<div class="meal-sub">Auto = počet dní · môžeš prepísať</div></div>
+        <div class="meal-label">Pocet obedov<div class="meal-sub">Auto = pocet dni &middot; mozno prepis</div></div>
         <div class="meal-input-wrap">
           <input id="obedyInput" type="number" min="0" step="1" class="auto-val" value="0">
-          <button class="reset-obedy" id="resetObedy" title="Späť na auto">↺</button>
+          <button class="reset-obedy" id="resetObedy">↺</button>
         </div>
       </div>
       <div class="fsep"></div>
       <div class="frow">
-        <label>OOP – odvody výnimka<div class="fsub">Prvých 200 € bez odvodov</div></label>
+        <label>OOP – odvody vynimka<div class="fsub">Prvych 200 € bez odvodov</div></label>
         <label class="toggle"><input type="checkbox" id="useOOP" checked><span class="ttrack"></span><span class="tthumb"></span></label>
       </div>
       <div class="frow">
-        <label>NČZD – nezdaniteľná časť<div class="fsub">Prvých 497,23 € bez dane</div></label>
+        <label>NCZD – nezdanitelna cast<div class="fsub">Prvych 497,23 € bez dane</div></label>
         <label class="toggle"><input type="checkbox" id="useNCZD" checked><span class="ttrack"></span><span class="tthumb"></span></label>
       </div>
       <div class="fsep"></div>
-      <div class="rate-hint">Sobota +2,63 €/h · Nedeľa +5,26 €/h<br>Sviatok +5,26 €/h · Noc +2,10 €/h</div>
+      <div class="rate-hint">Sobota +2,63 €/h &middot; Nedela +5,26 €/h<br>Sviatok +5,26 €/h &middot; Noc +2,10 €/h</div>
     </div>
+    <!-- VYPOCET -->
     <div class="card">
-      <p class="ctitle" style="margin-bottom:14px">Výpočet mzdy</p>
+      <p class="ctitle" style="margin-bottom:14px">Vypocet mzdy</p>
       <div class="blist" id="breakdown"></div>
     </div>
-    <!-- CIEĽOVÁ VÝPLATA -->
-    <div class="card span2" id="goalCard">
+    <!-- SABLONY -->
+    <div class="card span2">
+      <div class="card-header" style="margin-bottom:12px">
+        <p class="ctitle">🔁 Sablony zmien</p>
+        <span style="font-size:.76rem;color:var(--faint)">Tyzdenny vzor → vyplni cely mesiac jednym klikom</span>
+      </div>
+      <div class="tpl-layout">
+        <div>
+          <div class="tpl-grid" id="tplGrid"></div>
+          <div class="tpl-name-row">
+            <input id="tplNameInput" class="tpl-name-input" type="text" placeholder="Nazov sablony (napr. Standardny tyzden)">
+            <button class="tpl-btn" id="saveTplBtn">💾 Ulozit</button>
+          </div>
+          <div class="tpl-actions">
+            <button class="tpl-btn primary" id="applyTplBtn">📅 Pouzit na aktualny mesiac</button>
+            <button class="tpl-btn" id="clearTplBtn">✖ Zmazat mesiac</button>
+          </div>
+          <div class="tpl-apply-info" id="tplApplyInfo"></div>
+        </div>
+        <div>
+          <div style="font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:10px">Ulozene sablony</div>
+          <div class="saved-tpls" id="savedTplsList"></div>
+        </div>
+      </div>
+    </div>
+    <!-- CIELOVA VYPLATA -->
+    <div class="card span2">
       <div class="card-header" style="margin-bottom:10px">
-        <p class="ctitle">🎯 Cieľová výplata</p>
-        <span style="font-size:.76rem;color:var(--faint)">Koľko zmien potrebuješ?</span>
+        <p class="ctitle">🎯 Cielova vyplata</p>
+        <span style="font-size:.76rem;color:var(--faint)">Kolko zmien potrebujes?</span>
       </div>
       <div class="goal-layout">
-        <div class="goal-input-col">
-          <div class="goal-input-wrap">
-            <label class="goal-label">Chcem dostať na účet</label>
-            <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
-              <input id="goalNet" type="number" min="0" step="1" placeholder="napr. 500" class="goal-input">
-              <span style="font-size:.88rem;color:var(--muted);white-space:nowrap">€ čistého</span>
-            </div>
+        <div>
+          <div class="goal-label">Chcem dostat na ucet</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px;margin-bottom:14px">
+            <input id="goalNet" type="number" min="0" step="1" placeholder="napr. 500" class="goal-input">
+            <span style="font-size:.88rem;color:var(--muted)">€ cisteho</span>
           </div>
-          <div style="margin-top:12px">
-            <div class="goal-label" style="margin-bottom:7px">Typ zmeny pre výpočet</div>
-            <div class="goal-types" id="goalTypes"></div>
-          </div>
+          <div class="goal-label" style="margin-bottom:7px">Typ zmeny pre vypocet</div>
+          <div class="goal-types" id="goalTypes"></div>
         </div>
         <div class="goal-result" id="goalResult">
           <div class="goal-empty">Zadaj sumu a vyber typ zmeny</div>
         </div>
       </div>
     </div>
+    <!-- TOTAL -->
     <div class="card total-card span2">
-      <p class="ctitle">Výplata na účet</p>
+      <p class="ctitle">Vyplata na ucet</p>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
         <div><div class="net-amount" id="netPay">0,00 €</div><div class="net-sub" id="grossLine">z hrubej mzdy 0,00 €</div></div>
         <div id="pillsWrap" style="display:flex;flex-direction:column;align-items:flex-end;gap:5px"></div>
@@ -276,25 +334,26 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
       <div class="prog-wrap">
         <div class="prog-meta"><span>Rozdelenie hrubej mzdy</span><span id="progPct"></span></div>
         <div class="prog-track"><div class="seg snet" id="snet" style="width:0%"></div><div class="seg ssp" id="ssp" style="width:0%"></div><div class="seg stax" id="stax" style="width:0%"></div><div class="seg smeal" id="smeal" style="width:0%"></div></div>
-        <div class="plegend"><span><span class="pdot" style="background:rgba(109,170,69,.9)"></span>Čistá mzda</span><span><span class="pdot" style="background:rgba(187,101,59,.9)"></span>Odvody SP</span><span><span class="pdot" style="background:rgba(209,99,167,.85)"></span>Daň</span><span><span class="pdot" style="background:rgba(232,175,52,.9)"></span>Stravné</span></div>
+        <div class="plegend"><span><span class="pdot" style="background:rgba(109,170,69,.9)"></span>Cista mzda</span><span><span class="pdot" style="background:rgba(187,101,59,.9)"></span>Odvody SP</span><span><span class="pdot" style="background:rgba(209,99,167,.85)"></span>Dan</span><span><span class="pdot" style="background:rgba(232,175,52,.9)"></span>Stravne</span></div>
       </div>
     </div>
   </div>
 </div>
+<!-- MODAL -->
 <div class="modal-backdrop" id="modal">
   <div class="modal">
     <h3>Typ zmeny</h3>
     <div class="mdate" id="modalDate"></div>
     <div class="modal-hours">
-      <div><label style="display:block;font-size:.87rem;font-weight:600">⏱ Hodiny zmeny</label><div class="hsub">Auto z nastavení · prepíš ak treba</div></div>
+      <div><label style="display:block;font-size:.87rem;font-weight:600">Hodiny zmeny</label><div class="hsub">Auto z nastaveni &middot; prepis ak treba</div></div>
       <input id="modalHours" type="number" min="0.5" max="16" step="0.5" value="7.5">
       <button class="reset-h" id="resetModalH">↺ Auto</button>
     </div>
     <div class="mcheck-list" id="modalChecks"></div>
     <div class="modal-actions">
-      <button class="maction del" id="modalDel">🗑 Zmazať</button>
-      <button class="maction cancel" id="modalCancel">Zrušiť</button>
-      <button class="maction primary" id="modalSave">Uložiť</button>
+      <button class="maction del" id="modalDel">🗑 Zmazat</button>
+      <button class="maction cancel" id="modalCancel">Zrusit</button>
+      <button class="maction primary" id="modalSave">Ulozit</button>
     </div>
   </div>
 </div>
@@ -310,14 +369,14 @@ tbtn.innerHTML=theme==='dark'?SUN:MOON;
 tbtn.addEventListener('click',()=>{theme=theme==='dark'?'light':'dark';root.setAttribute('data-theme',theme);tbtn.innerHTML=theme==='dark'?SUN:MOON;});
 const SUR={normal:0,saturday:2.6295,sunday:5.259,holiday:5.259,night:2.1036};
 const COLORS={normal:'rgba(67,122,34,.85)',saturday:'rgba(218,113,1,.88)',sunday:'rgba(1,105,111,.88)',holiday:'rgba(161,44,123,.88)',night:'rgba(0,100,148,.88)'};
-const LABELS={normal:'Bežný deň',saturday:'Sobota',sunday:'Nedeľa',holiday:'Sviatok',night:'Noc'};
+const LABELS={normal:'Bezny den',saturday:'Sobota',sunday:'Nedela',holiday:'Sviatok',night:'Noc'};
 const ICONS={normal:'🟢',saturday:'🟠',sunday:'🔵',holiday:'🎉',night:'🌙'};
 const DOT={normal:'#437a22',saturday:'#da7101',sunday:'#01696f',holiday:'#a12c7b',night:'#006494'};
 const TYPES=['normal','saturday','sunday','holiday','night'];
 const SK_HOL=['2026-01-01','2026-01-06','2026-04-03','2026-04-06','2026-05-01','2026-05-08','2026-07-05','2026-08-29','2026-09-01','2026-09-15','2026-11-01','2026-11-17','2026-12-24','2026-12-25','2026-12-26'];
 const r2=n=>Math.round(n*100)/100;
-const fmt=n=>n.toFixed(2).replace('.',',')+'\u00a0€';
-const fmtH=n=>n.toFixed(1).replace('.',',')+'\u00a0h';
+const fmt=n=>n.toFixed(2).replace('.',',')+'&nbsp;€';
+const fmtH=n=>n.toFixed(1).replace('.',',')+'&nbsp;h';
 const stored=JSON.parse(localStorage.getItem('mzda_v5')||'{}');
 const rawShifts=stored.shifts||{};
 const shifts={};
@@ -340,14 +399,14 @@ function save(){localStorage.setItem('mzda_v5',JSON.stringify({shifts,manOverrid
 function defaultShiftH(){return Math.max(0.5,parseFloat(shiftHEl.value)||7.5);}
 obedyInput.addEventListener('input',()=>{const v=parseInt(obedyInput.value);obedyOverride=isNaN(v)?null:v;obedyInput.classList.toggle('auto-val',obedyOverride===null);obedyInput.classList.toggle('user-val',obedyOverride!==null);save();renderAll();});
 document.getElementById('resetObedy').addEventListener('click',()=>{obedyOverride=null;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');save();renderAll();});
-document.getElementById('resetCal').addEventListener('click',()=>{if(!confirm('Naozaj zmazať všetky dni z kalendára?'))return;Object.keys(shifts).forEach(k=>delete shifts[k]);obedyOverride=null;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');save();refreshCal();renderAll();});
+document.getElementById('resetCal').addEventListener('click',()=>{if(!confirm('Naozaj zmazat vsetky dni?'))return;Object.keys(shifts).forEach(k=>delete shifts[k]);obedyOverride=null;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');save();refreshCal();renderAll();});
 let mode='calendar';
 const tabCal=document.getElementById('tabCal'),tabMan=document.getElementById('tabMan');
 const calPanel=document.getElementById('calPanel'),manPanel=document.getElementById('manPanel');
 tabCal.addEventListener('click',()=>{mode='calendar';tabCal.classList.add('active');tabMan.classList.remove('active');calPanel.style.display='';manPanel.style.display='none';renderAll();});
 tabMan.addEventListener('click',()=>{mode='manual';tabMan.classList.add('active');tabCal.classList.remove('active');manPanel.style.display='';calPanel.style.display='none';buildManualTable();renderAll();});
 function typeColor(types){if(types.includes('holiday'))return COLORS.holiday;if(types.includes('night'))return COLORS.night;if(types.includes('sunday'))return COLORS.sunday;if(types.includes('saturday'))return COLORS.saturday;return COLORS.normal;}
-function typeLabel(dateStr){const s=shifts[dateStr];if(!s)return '';const types=s.types;const icon=types.length===1?LABELS[types[0]]:types.map(t=>ICONS[t]).join('');return s.hours!=null?`${icon} ${s.hours}h`:icon;}
+function typeLabel(dateStr){const s=shifts[dateStr];if(!s)return '';const types=s.types;const icon=types.length===1?LABELS[types[0]]:types.map(t=>ICONS[t]).join('');return s.hours!=null?icon+' '+s.hours+'h':icon;}
 function buildCalEvents(){return Object.keys(shifts).map(date=>({id:date,title:typeLabel(date),start:date,allDay:true,backgroundColor:typeColor(shifts[date].types),borderColor:'transparent'}));}
 function refreshCal(){if(!calendar)return;calendar.removeAllEvents();buildCalEvents().forEach(e=>calendar.addEvent(e));}
 const modalEl=document.getElementById('modal'),modalDateEl=document.getElementById('modalDate'),modalChecks=document.getElementById('modalChecks');
@@ -356,7 +415,7 @@ let pendingDate=null,checkState={},modalHoursCustom=false;
 function openModal(dateStr){
   pendingDate=dateStr;
   const d=new Date(dateStr+'T00:00:00');
-  const days=['nedeľa','pondelok','utorok','streda','štvrtok','piatok','sobota'];
+  const days=['Nedela','Pondelok','Utorok','Streda','Stvrtok','Piatok','Sobota'];
   modalDateEl.textContent=days[d.getDay()]+' '+d.toLocaleDateString('sk-SK',{day:'numeric',month:'long',year:'numeric'});
   const existing=shifts[dateStr];const defH=defaultShiftH();
   if(existing&&existing.hours!=null){modalHoursEl.value=existing.hours;modalHoursCustom=true;modalHoursEl.classList.add('custom-h');resetModalH.style.display='';}
@@ -373,13 +432,13 @@ modalHoursEl.addEventListener('input',()=>{modalHoursCustom=true;modalHoursEl.cl
 resetModalH.addEventListener('click',()=>{modalHoursCustom=false;modalHoursEl.value=defaultShiftH();modalHoursEl.classList.remove('custom-h');resetModalH.style.display='none';});
 function renderModalChecks(){
   modalChecks.innerHTML='';
-  const surL={normal:'+0,00\u00a0€/h',saturday:'+2,63\u00a0€/h',sunday:'+5,26\u00a0€/h',holiday:'+5,26\u00a0€/h',night:'+2,10\u00a0€/h'};
+  const surL={normal:'+0,00 €/h',saturday:'+2,63 €/h',sunday:'+5,26 €/h',holiday:'+5,26 €/h',night:'+2,10 €/h'};
   const cc={normal:'checked-n',saturday:'checked-s',sunday:'checked-su',holiday:'checked-h',night:'checked-ni'};
   TYPES.forEach(t=>{
     const checked=!!checkState[t];
     const row=document.createElement('label');
     row.className='mcheck'+(checked?' '+cc[t]:'');
-    row.innerHTML=`<input type="checkbox" ${checked?'checked':''}><span class="type-dot" style="background:${DOT[t]}"></span><span class="mcheck-label">${ICONS[t]} ${LABELS[t]}</span><span class="mcheck-sur">${surL[t]}</span>`;
+    row.innerHTML='<input type="checkbox" '+(checked?'checked':'')+'><span class="type-dot" style="background:'+DOT[t]+'"></span><span class="mcheck-label">'+ICONS[t]+' '+LABELS[t]+'</span><span class="mcheck-sur">'+surL[t]+'</span>';
     const cb=row.querySelector('input');
     cb.addEventListener('change',()=>{checkState[t]=cb.checked;row.className='mcheck'+(cb.checked?' '+cc[t]:'');});
     modalChecks.appendChild(row);
@@ -391,7 +450,7 @@ document.getElementById('modalCancel').addEventListener('click',closeModal);
 document.getElementById('modalDel').addEventListener('click',()=>{delete shifts[pendingDate];closeModal();save();refreshCal();renderAll();});
 document.getElementById('modalSave').addEventListener('click',()=>{
   const selected=TYPES.filter(t=>checkState[t]);
-  if(selected.length===0){alert('Vyber aspoň jeden typ zmeny.');return;}
+  if(selected.length===0){alert('Vyber aspon jeden typ zmeny.');return;}
   const h=modalHoursCustom?parseFloat(modalHoursEl.value)||null:null;
   shifts[pendingDate]={types:selected,hours:h};closeModal();save();refreshCal();renderAll();
 });
@@ -413,7 +472,7 @@ function buildManualTable(){
     const ov=manOverrides[t]||{};const calDays=stats[t].days;const calHours=stats[t].hours;
     const days=ov.days!=null?ov.days:calDays;const hours=ov.hours!=null?ov.hours:(calHours||days*defH);const obedy=ov.obedy!=null?ov.obedy:days;
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><span class="type-label"><span class="type-dot" style="background:${DOT[t]}"></span>${LABELS[t]}</span></td><td><input class="minput mdays${ov.days!=null?' manual-override':''}" type="number" min="0" step="1" value="${days}"></td><td><input class="minput mhours${ov.hours!=null?' manual-override':''}" type="number" min="0" step="0.5" value="${hours.toFixed(1)}"></td><td><input class="minput mobedy${ov.obedy!=null?' manual-override':''}" type="number" min="0" step="1" value="${obedy}"></td><td><span class="hint-cell" style="color:${calDays>0?'var(--p)':'var(--faint)'}">${calDays>0?calDays+'d':''}</span></td>`;
+    tr.innerHTML='<td><span class="type-label"><span class="type-dot" style="background:'+DOT[t]+'"></span>'+LABELS[t]+'</span></td><td><input class="minput mdays'+(ov.days!=null?' manual-override':'')+'" type="number" min="0" step="1" value="'+days+'"></td><td><input class="minput mhours'+(ov.hours!=null?' manual-override':'')+'" type="number" min="0" step="0.5" value="'+hours.toFixed(1)+'"></td><td><input class="minput mobedy'+(ov.obedy!=null?' manual-override':'')+'" type="number" min="0" step="1" value="'+obedy+'"></td><td><span class="hint-cell" style="color:'+(calDays>0?'var(--p)':'var(--faint)')+'">'+  (calDays>0?calDays+'d':'')+'</span></td>';
     tbody.appendChild(tr);
     const dI=tr.querySelector('.mdays'),hI=tr.querySelector('.mhours'),oI=tr.querySelector('.mobedy');
     dI.addEventListener('input',()=>{const v=parseFloat(dI.value)||0;if(!manOverrides[t])manOverrides[t]={};manOverrides[t].days=v;if(manOverrides[t].hours==null)hI.value=(v*defH).toFixed(1);if(manOverrides[t].obedy==null)oI.value=v;dI.classList.add('manual-override');save();renderAll();});
@@ -441,12 +500,10 @@ function calc(){
 }
 function renderCalSummary(){
   const stats=getCalStats();const sl=document.getElementById('calSummary');sl.innerHTML='';
-  TYPES.forEach(t=>{const s=stats[t];const el=document.createElement('div');el.className='srow';el.innerHTML=`<span class="sk">${LABELS[t]}</span><span class="sv">${s.days}\u00a0d\u00a0/\u00a0${fmtH(s.hours)}</span>`;sl.appendChild(el);});
-  const tot=calTotals();const el2=document.createElement('div');el2.className='srow tr';el2.innerHTML=`<span class="sk">Spolu dní</span><span class="sv">${tot.days}\u00a0d\u00a0/\u00a0${fmtH(tot.hours)}</span>`;sl.appendChild(el2);
+  TYPES.forEach(t=>{const s=stats[t];const el=document.createElement('div');el.className='srow';el.innerHTML='<span class="sk">'+LABELS[t]+'</span><span class="sv">'+s.days+'&nbsp;d&nbsp;/&nbsp;'+fmtH(s.hours)+'</span>';sl.appendChild(el);});
+  const tot=calTotals();const el2=document.createElement('div');el2.className='srow tr';el2.innerHTML='<span class="sk">Spolu dni</span><span class="sv">'+tot.days+'&nbsp;d&nbsp;/&nbsp;'+fmtH(tot.hours)+'</span>';sl.appendChild(el2);
   const customH=Object.values(shifts).filter(s=>s.hours!=null).length;
-  if(customH>0){const el3=document.createElement('div');el3.className='srow combo-note';el3.innerHTML=`<span class="sk">✏️ ${customH}\u00a0dní má upravené hodiny</span>`;sl.appendChild(el3);}
-  const comboDays=Object.values(shifts).filter(s=>s.types.length>1).length;
-  if(comboDays>0){const el4=document.createElement('div');el4.className='srow combo-note';el4.innerHTML=`<span class="sk">⚠️ ${comboDays}\u00a0dní má viac typov</span>`;sl.appendChild(el4);}
+  if(customH>0){const el3=document.createElement('div');el3.className='srow combo-note';el3.innerHTML='<span class="sk">✏️ '+customH+'&nbsp;dni ma upravene hodiny</span>';sl.appendChild(el3);}
 }
 function updateObedyField(autoVal){
   if(obedyOverride===null){obedyInput.value=autoVal;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');}
@@ -456,36 +513,36 @@ function renderAll(){
   if(mode==='calendar')renderCalSummary();
   const d=calc();updateObedyField(d.manObedy);
   const bd=document.getElementById('breakdown');bd.innerHTML='';
-  const add=(label,val,sub,cls)=>{const el=document.createElement('div');el.className='brow'+(cls?' '+cls:'');el.innerHTML=`<div><div class="bk">${label}</div>${sub?`<div class="bsub">${sub}</div>`:''}</div><div class="bv">${val}</div>`;bd.appendChild(el);};
-  add('Základná mzda',fmt(d.basePay),`${fmtH(d.totalH)} × ${d.baseRate.toFixed(2)}\u00a0€`);
-  add('Príplatky',fmt(d.surPay),'sobota / nedeľa / sviatok / noc');
-  add('Hrubá mzda',fmt(d.gross),`${d.daysTotal}\u00a0dní`,'hl');
-  add('Starobné + invalidné\u00a07\u00a0%','\u2212'+fmt(d.sp),`základ po OOP\u00a0${fmt(d.spBasis)}`,'neg');
-  add('Daň z príjmu\u00a019\u00a0%','\u2212'+fmt(d.tax),`základ\u00a0${fmt(d.taxable)}\u00a0(NČZD\u00a0\u2212${fmt(d.nczd)})`,d.tax>0?'neg':'');
-  add('Stravné','\u2212'+fmt(d.meal),`${d.obedy}\u00a0obedov × ${d.mealPrice.toFixed(2)}\u00a0€${obedyOverride!=null?' · ✏️ ručne':''}`,d.meal>0?'neg':'');
+  const add=(label,val,sub,cls)=>{const el=document.createElement('div');el.className='brow'+(cls?' '+cls:'');el.innerHTML='<div><div class="bk">'+label+'</div>'+(sub?'<div class="bsub">'+sub+'</div>':'')+'</div><div class="bv">'+val+'</div>';bd.appendChild(el);};
+  add('Zakladna mzda',fmt(d.basePay),fmtH(d.totalH)+' x '+d.baseRate.toFixed(2)+'&nbsp;€');
+  add('Priplatky',fmt(d.surPay),'sobota / nedela / sviatok / noc');
+  add('Hruba mzda',fmt(d.gross),d.daysTotal+'&nbsp;dni','hl');
+  add('Starobne + invalidne 7 %','-'+fmt(d.sp),'zaklad po OOP '+fmt(d.spBasis),'neg');
+  add('Dan z prijmu 19 %','-'+fmt(d.tax),'zaklad '+fmt(d.taxable)+' (NCZD -'+fmt(d.nczd)+')',d.tax>0?'neg':'');
+  add('Stravne','-'+fmt(d.meal),d.obedy+'&nbsp;obedov x '+d.mealPrice.toFixed(2)+'&nbsp;€'+(obedyOverride!=null?' · ✏️ rucne':''),d.meal>0?'neg':'');
   document.getElementById('netPay').textContent=fmt(d.net);
   document.getElementById('grossLine').textContent='z hrubej mzdy '+fmt(d.gross);
   const pw=document.getElementById('pillsWrap');pw.innerHTML='';
-  const addPill=(txt,green)=>{const el=document.createElement('span');el.style.cssText=`background:${green?'rgba(109,170,69,.3)':'rgba(255,255,255,.15)'};padding:3px 11px;border-radius:999px;font-size:.76rem;color:#fff`;el.textContent=txt;pw.appendChild(el);};
-  addPill(useOOPEl.checked?'OOP ✓':'OOP ✗',useOOPEl.checked);
-  addPill(useNCZDEl.checked&&d.tax===0?'Daň 0,00 €':useNCZDEl.checked?'NČZD ✓':'NČZD ✗',useNCZDEl.checked&&d.tax===0);
+  const addPill=(txt,green)=>{const el=document.createElement('span');el.style.cssText='background:'+(green?'rgba(109,170,69,.3)':'rgba(255,255,255,.15)')+';padding:3px 11px;border-radius:999px;font-size:.76rem;color:#fff';el.textContent=txt;pw.appendChild(el);};
+  addPill(useOOPEl.checked?'OOP':'OOP off',useOOPEl.checked);
+  addPill(useNCZDEl.checked&&d.tax===0?'Dan 0,00 €':useNCZDEl.checked?'NCZD':'NCZD off',useNCZDEl.checked&&d.tax===0);
   if(d.gross>0)addPill(Math.round(d.net/d.gross*100)+'% na ruke',false);
-  if(d.gross>0){const g=d.gross;document.getElementById('snet').style.width=(d.net/g*100)+'%';document.getElementById('ssp').style.width=(d.sp/g*100)+'%';document.getElementById('stax').style.width=(d.tax/g*100)+'%';document.getElementById('smeal').style.width=(d.meal/g*100)+'%';document.getElementById('progPct').textContent=Math.round(d.net/d.gross*100)+'% čistá';}
+  if(d.gross>0){const g=d.gross;document.getElementById('snet').style.width=(d.net/g*100)+'%';document.getElementById('ssp').style.width=(d.sp/g*100)+'%';document.getElementById('stax').style.width=(d.tax/g*100)+'%';document.getElementById('smeal').style.width=(d.meal/g*100)+'%';document.getElementById('progPct').textContent=Math.round(d.net/d.gross*100)+'% cista';}
   else{['snet','ssp','stax','smeal'].forEach(id=>document.getElementById(id).style.width='0%');document.getElementById('progPct').textContent='';}
   save();
 }
 [shiftHEl,baseRateEl,mealEl].forEach(el=>el.addEventListener('input',()=>{if(mode==='manual')buildManualTable();renderAll();calcGoal();}));
 [useOOPEl,useNCZDEl].forEach(el=>el.addEventListener('change',()=>{renderAll();calcGoal();}));
-/* ===== CIEĽOVÁ VÝPLATA ===== */
+/* CIELOVA VYPLATA */
 const goalNetEl=document.getElementById('goalNet');
 const goalTypesEl=document.getElementById('goalTypes');
 const goalResultEl=document.getElementById('goalResult');
 let goalType='normal';
-const GOAL_TYPE_LABELS={normal:'Bežný',saturday:'Sobota',sunday:'Nedeľa',holiday:'Sviatok',night:'Noc'};
+const GOAL_TYPE_LABELS={normal:'Bezny',saturday:'Sobota',sunday:'Nedela',holiday:'Sviatok',night:'Noc'};
 TYPES.forEach(t=>{
   const btn=document.createElement('button');
-  btn.className=`gtype gtype-${t}${t==='normal'?' active':''}`;
-  btn.innerHTML=`${ICONS[t]} ${GOAL_TYPE_LABELS[t]}`;
+  btn.className='gtype gtype-'+t+(t==='normal'?' active':'');
+  btn.innerHTML=ICONS[t]+' '+GOAL_TYPE_LABELS[t];
   btn.addEventListener('click',()=>{goalType=t;goalTypesEl.querySelectorAll('.gtype').forEach(b=>b.classList.remove('active'));btn.classList.add('active');calcGoal();});
   goalTypesEl.appendChild(btn);
 });
@@ -518,23 +575,102 @@ function calcGoal(){
   const bR=Math.max(5.259,parseFloat(baseRateEl.value)||6.5);
   const mP=Math.max(0,parseFloat(mealEl.value)||0);
   const hours=solveHoursForNet(targetNet,goalType);
-  const shifts=Math.ceil(hours/sH);
-  const actualHours=shifts*sH;
+  const shiftsCount=Math.ceil(hours/sH);
+  const actualHours=shiftsCount*sH;
   const actualNet=r2(calcNetFromHoursGoal(actualHours,goalType));
   const diff=r2(actualNet-targetNet);
   const hourRate=bR+SUR[goalType];
   const grossApprox=r2(actualHours*hourRate);
   let html='';
-  html+=`<div class="goal-stat hl"><div><div class="gs-label">Počet zmien</div><div class="gs-sub">${shifts} × ${fmtH(sH)} = ${fmtH(actualHours)}</div></div><div class="gs-val">${shifts} zmien</div></div>`;
-  html+=`<div class="goal-stat"><div><div class="gs-label">Celkové hodiny</div><div class="gs-sub">zaokrúhlené nahor na celé zmeny</div></div><div class="gs-val">${fmtH(actualHours)}</div></div>`;
-  html+=`<div class="goal-stat"><div><div class="gs-label">Hrubá mzda</div><div class="gs-sub">${fmtH(actualHours)} × ${hourRate.toFixed(2)}\u00a0€/h</div></div><div class="gs-val">${fmt(grossApprox)}</div></div>`;
-  html+=`<div class="goal-stat${diff>0?' warn':''}"><div><div class="gs-label">Skutočná výplata</div><div class="gs-sub">${diff>0?'o\u00a0'+fmt(diff)+'\u00a0viac ako cieľ':'presne\u00a0'+fmt(actualNet)}</div></div><div class="gs-val">${fmt(actualNet)}</div></div>`;
+  html+='<div class="goal-stat hl"><div><div class="gs-label">Pocet zmien</div><div class="gs-sub">'+shiftsCount+' x '+fmtH(sH)+' = '+fmtH(actualHours)+'</div></div><div class="gs-val">'+shiftsCount+' zmien</div></div>';
+  html+='<div class="goal-stat"><div><div class="gs-label">Celkove hodiny</div><div class="gs-sub">zaokruhlene nahor</div></div><div class="gs-val">'+fmtH(actualHours)+'</div></div>';
+  html+='<div class="goal-stat"><div><div class="gs-label">Hruba mzda</div><div class="gs-sub">'+fmtH(actualHours)+' x '+hourRate.toFixed(2)+'&nbsp;€/h</div></div><div class="gs-val">'+fmt(grossApprox)+'</div></div>';
+  html+='<div class="goal-stat'+(diff>0?' warn':'')+'"><div><div class="gs-label">Skutocna vyplata</div><div class="gs-sub">'+(diff>0?'o&nbsp;'+fmt(diff)+'&nbsp;viac ako ciel':'presne '+fmt(actualNet))+'</div></div><div class="gs-val">'+fmt(actualNet)+'</div></div>';
   goalResultEl.innerHTML=html;
 }
 goalNetEl.addEventListener('input',calcGoal);
+/* SABLONY */
+const DAY_NAMES_T=['Nedela','Pondelok','Utorok','Streda','Stvrtok','Piatok','Sobota'];
+const DAY_ORDER_T=[1,2,3,4,5,6,0];
+const DEF_TPL={1:'normal',2:'normal',3:'normal',4:'normal',5:'normal',6:'saturday',0:null};
+let savedTemplates=JSON.parse(localStorage.getItem('mzda_templates')||'[]');
+let tplPattern={};
+DAY_ORDER_T.forEach(d=>{const t=DEF_TPL[d];tplPattern[d]=t?{type:t,hours:null}:null;});
+function saveTpls(){localStorage.setItem('mzda_templates',JSON.stringify(savedTemplates));}
+function buildTplGrid(){
+  const grid=document.getElementById('tplGrid');if(!grid)return;grid.innerHTML='';
+  const TYPE_OPTS=[['none','— volno —'],['normal','Bezny den'],['saturday','Sobota'],['sunday','Nedela'],['holiday','Sviatok'],['night','Noc']];
+  DAY_ORDER_T.forEach(dow=>{
+    const pat=tplPattern[dow];
+    const row=document.createElement('div');row.className='tpl-row'+(pat===null?' off':'');
+    const defH=defaultShiftH();
+    const selOpts=TYPE_OPTS.map(([v,l])=>'<option value="'+v+'"'+((!pat&&v==='none')||(pat&&pat.type===v)?' selected':'')+'>'+ICONS[v]||' '+l+'</option>').join('');
+    const hVal=pat&&pat.hours!=null?pat.hours:defH;
+    row.innerHTML='<span class="tpl-day">'+DAY_NAMES_T[dow]+'</span><select class="tpl-select">'+TYPE_OPTS.map(([v,l])=>'<option value="'+v+'"'+((!pat&&v==='none')||(pat&&pat.type===v)?' selected':'')+'>'+l+'</option>').join('')+'</select><input class="tpl-h" type="number" min="0.5" max="16" step="0.5" value="'+hVal+'"'+(pat===null?' disabled':'')+' >';
+    const selEl=row.querySelector('select'),hEl=row.querySelector('.tpl-h');
+    selEl.addEventListener('change',()=>{const v=selEl.value;if(v==='none'){tplPattern[dow]=null;row.classList.add('off');hEl.disabled=true;}else{tplPattern[dow]={type:v,hours:parseFloat(hEl.value)||null};row.classList.remove('off');hEl.disabled=false;}});
+    hEl.addEventListener('input',()=>{if(tplPattern[dow])tplPattern[dow].hours=parseFloat(hEl.value)||null;});
+    grid.appendChild(row);
+  });
+}
+function renderSavedTpls(){
+  const cont=document.getElementById('savedTplsList');if(!cont)return;cont.innerHTML='';
+  if(savedTemplates.length===0){cont.innerHTML='<div class="saved-empty">Zatial ziadne ulozene sablony</div>';return;}
+  savedTemplates.forEach((tpl,i)=>{
+    const worked=DAY_ORDER_T.filter(d=>tpl.pattern[d]!==null).length;
+    const row=document.createElement('div');row.className='saved-tpl-row';
+    const abbr={0:'Ne',1:'Po',2:'Ut',3:'St',4:'St',5:'Pi',6:'So'};
+    const da=DAY_ORDER_T.filter(d=>tpl.pattern[d]).map(d=>abbr[d]).join(', ');
+    row.innerHTML='<div><div class="saved-tpl-name">'+tpl.name+'</div><div class="saved-tpl-days">'+worked+' prac. dni / '+da+'</div></div><button class="tpl-small-btn">Nacitat</button><button class="tpl-del-btn">🗑</button>';
+    row.querySelector('.tpl-small-btn').addEventListener('click',()=>{tplPattern=JSON.parse(JSON.stringify(tpl.pattern));buildTplGrid();});
+    row.querySelector('.tpl-del-btn').addEventListener('click',()=>{if(confirm('Zmazat "'+tpl.name+'"?')){savedTemplates.splice(i,1);saveTpls();renderSavedTpls();}});
+    cont.appendChild(row);
+  });
+}
+document.getElementById('saveTplBtn').addEventListener('click',()=>{
+  const name=(document.getElementById('tplNameInput').value||'').trim()||'Sablona '+(savedTemplates.length+1);
+  savedTemplates.push({name,pattern:JSON.parse(JSON.stringify(tplPattern))});
+  saveTpls();renderSavedTpls();document.getElementById('tplNameInput').value='';
+});
+document.getElementById('applyTplBtn').addEventListener('click',()=>{
+  const d=calendar.getDate();const yr=d.getFullYear(),mo=d.getMonth();
+  const dim=new Date(yr,mo+1,0).getDate();let added=0,skipped=0;
+  for(let day=1;day<=dim;day++){
+    const date=new Date(yr,mo,day);const dow=date.getDay();
+    const pat=tplPattern[dow];if(!pat)continue;
+    const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    if(SK_HOL.includes(ds)){skipped++;continue;}
+    const defH=defaultShiftH();
+    shifts[ds]={types:[pat.type],hours:(pat.hours!=null&&pat.hours!==defH)?pat.hours:null};added++;
+  }
+  save();refreshCal();renderAll();
+  const info=document.getElementById('tplApplyInfo');
+  const moN=['januar','februar','marec','april','maj','jun','jul','august','september','oktober','november','december'];
+  info.textContent='Pridanych '+added+' dni za '+moN[mo]+' '+yr+(skipped>0?' / '+skipped+' sviatkov preskoceno':'');
+  info.style.display='block';setTimeout(()=>info.style.display='none',4000);
+});
+document.getElementById('clearTplBtn').addEventListener('click',()=>{
+  const d=calendar.getDate();const yr=d.getFullYear(),mo=d.getMonth();
+  if(!confirm('Zmazat vsetky zmeny za tento mesiac?'))return;
+  const prefix=yr+'-'+String(mo+1).padStart(2,'0')+'-';
+  Object.keys(shifts).filter(k=>k.startsWith(prefix)).forEach(k=>delete shifts[k]);
+  save();refreshCal();renderAll();
+});
+buildTplGrid();
+renderSavedTpls();
+/* PWA */
+let deferredPrompt=null;
+const installBtn=document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;if(installBtn)installBtn.style.display='flex';});
+if(installBtn)installBtn.addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();const r=await deferredPrompt.userChoice;if(r.outcome==='accepted')installBtn.style.display='none';deferredPrompt=null;});
+window.addEventListener('appinstalled',()=>{if(installBtn)installBtn.style.display='none';});
 renderAll();
 })();
 </script>
 </body>
-</html>
+</html>"""
 
+Path('/root/output/index.html').write_text(html, encoding='utf-8')
+print('OK', len(html), 'bytes')
+for c in ['beforeinstallprompt','applyTplBtn','savedTemplates','buildTplGrid','tplGrid','installBtn','calcGoal','solveHoursForNet']:
+    print(c, '✓' if c in html else '✗ MISSING')
