@@ -177,9 +177,10 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
   <header class="header">
     <div class="logo">
       <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="var(--p)"/><path d="M11 13h18M11 19.5h12M11 26h8" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="28.5" cy="26.5" r="5.5" fill="var(--p)" stroke="#fff" stroke-width="2"/><path d="M26.5 26.5h4M28.5 24.5v4" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
-      <div><h1>Mzdová kalkulačka</h1><p>DBPŠ 2026 · kalendár alebo ručné zadanie</p></div>
+      <div><h1>Mzdová kalkulačka</h1><p>DBPŠ a DVP 2026 · kalendár alebo ručné zadanie</p></div>
     </div>
     <div class="hright">
+      <div class="pill" id="monthBadge" style="font-weight:600;color:var(--p);border-color:rgba(1,105,111,.3);background:var(--psoft)">–</div>
       <div class="pill"><span>Zmena</span><input id="shiftH" type="number" min="1" max="16" step="0.5" value="7.5"><span>h</span></div>
       <button class="tbtn" id="themeBtn" aria-label="Téma"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
     </div>
@@ -217,6 +218,13 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
     </div>
     <div class="card">
       <p class="ctitle" style="margin-bottom:14px">Nastavenia</p>
+      <div class="frow">
+        <label>Typ pracovnej zmluvy</label>
+        <select id="agreementType" style="width:160px;padding:7px 10px;border:1px solid var(--border);border-radius:10px;background:var(--s2);font-family:'DM Sans',sans-serif;font-size:.84rem;transition:border-color .15s">
+          <option value="dbps">Študent (DBPŠ)</option>
+          <option value="dovp">Bežný občan (DoVP)</option>
+        </select>
+      </div>
       <div class="frow"><label>Hodinová mzda</label><input id="baseRate" type="number" min="5.259" step="0.01" value="6.50"></div>
       <div class="frow"><label>Cena jedného obeda</label><input id="mealPrice" type="number" min="0" step="0.01" value="1.00"></div>
       <div class="meal-row">
@@ -227,7 +235,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
         </div>
       </div>
       <div class="fsep"></div>
-      <div class="frow">
+      <div class="frow" id="oopRow">
         <label>OOP – odvody výnimka<div class="fsub">Prvých 200 € bez odvodov</div></label>
         <label class="toggle"><input type="checkbox" id="useOOP" checked><span class="ttrack"></span><span class="tthumb"></span></label>
       </div>
@@ -276,7 +284,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;background:none;bo
       <div class="prog-wrap">
         <div class="prog-meta"><span>Rozdelenie hrubej mzdy</span><span id="progPct"></span></div>
         <div class="prog-track"><div class="seg snet" id="snet" style="width:0%"></div><div class="seg ssp" id="ssp" style="width:0%"></div><div class="seg stax" id="stax" style="width:0%"></div><div class="seg smeal" id="smeal" style="width:0%"></div></div>
-        <div class="plegend"><span><span class="pdot" style="background:rgba(109,170,69,.9)"></span>Čistá mzda</span><span><span class="pdot" style="background:rgba(187,101,59,.9)"></span>Odvody SP</span><span><span class="pdot" style="background:rgba(209,99,167,.85)"></span>Daň</span><span><span class="pdot" style="background:rgba(232,175,52,.9)"></span>Stravné</span></div>
+        <div class="plegend"><span><span class="pdot" style="background:rgba(109,170,69,.9)"></span>Čistá mzda</span><span><span class="pdot" style="background:rgba(187,101,59,.9)"></span>Odvody</span><span><span class="pdot" style="background:rgba(209,99,167,.85)"></span>Daň</span><span><span class="pdot" style="background:rgba(232,175,52,.9)"></span>Stravné</span></div>
       </div>
     </div>
   </div>
@@ -318,29 +326,91 @@ const SK_HOL=['2026-01-01','2026-01-06','2026-04-03','2026-04-06','2026-05-01','
 const r2=n=>Math.round(n*100)/100;
 const fmt=n=>n.toFixed(2).replace('.',',')+'\u00a0€';
 const fmtH=n=>n.toFixed(1).replace('.',',')+'\u00a0h';
-const stored=JSON.parse(localStorage.getItem('mzda_v5')||'{}');
-const rawShifts=stored.shifts||{};
-const shifts={};
-for(const [d,v] of Object.entries(rawShifts)){if(Array.isArray(v))shifts[d]={types:v,hours:null};else shifts[d]=v;}
+// ===== PER-MONTH STORAGE =====
+const STORE_KEY='mzda_v6';
+const stored=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');
+// Migrate from old mzda_v5 format (single global shifts → month buckets)
+(function migrate(){
+  const old=JSON.parse(localStorage.getItem('mzda_v5')||'null');
+  if(!old||stored._migrated)return;
+  const raw=old.shifts||{};
+  const buckets={};
+  for(const [d,v] of Object.entries(raw)){
+    const m=d.slice(0,7);
+    if(!buckets[m])buckets[m]={shifts:{},manOverrides:{},obedyOverride:null};
+    buckets[m].shifts[d]=Array.isArray(v)?{types:v,hours:null}:v;
+  }
+  Object.assign(stored,buckets);
+  stored._migrated=true;
+  if(old.cfg)stored.cfg=old.cfg;
+})();
 const cfg=stored.cfg||{};
-const manOverrides=stored.manOverrides||{};
-let obedyOverride=stored.obedyOverride!=null?stored.obedyOverride:null;
+
+// Current displayed month key "YYYY-MM"
+const today=new Date();
+let currentMonth=today.toISOString().slice(0,7);
+
+function getMonthData(m){
+  if(!stored[m])stored[m]={shifts:{},manOverrides:{},obedyOverride:null};
+  return stored[m];
+}
+// Active month proxies (references change on month switch)
+let shifts, manOverrides, obedyOverride;
+function loadMonth(m){
+  currentMonth=m;
+  const md=getMonthData(m);
+  // Normalise legacy array-type shifts
+  shifts={};
+  for(const [d,v] of Object.entries(md.shifts||{})){
+    shifts[d]=Array.isArray(v)?{types:v,hours:null}:v;
+  }
+  md.shifts=shifts; // keep reference
+  manOverrides=md.manOverrides=md.manOverrides||{};
+  obedyOverride=md.obedyOverride!=null?md.obedyOverride:null;
+  // Sync obedy field
+  updateObedyFieldFromOverride();
+  updateMonthBadge();
+}
+function updateObedyFieldFromOverride(){
+  const el=document.getElementById('obedyInput');
+  if(!el)return;
+  if(obedyOverride===null){el.value='0';el.classList.add('auto-val');el.classList.remove('user-val');}
+  else{el.value=obedyOverride;el.classList.remove('auto-val');el.classList.add('user-val');}
+}
+function updateMonthBadge(){
+  const el=document.getElementById('monthBadge');
+  if(!el)return;
+  const [y,mo]=currentMonth.split('-');
+  const months=['január','február','marec','apríl','máj','jún','júl','august','september','október','november','december'];
+  el.textContent=months[parseInt(mo)-1]+' '+y;
+}
+
 const shiftHEl=document.getElementById('shiftH');
 const baseRateEl=document.getElementById('baseRate');
 const mealEl=document.getElementById('mealPrice');
 const useOOPEl=document.getElementById('useOOP');
 const useNCZDEl=document.getElementById('useNCZD');
 const obedyInput=document.getElementById('obedyInput');
+const agreementTypeEl=document.getElementById('agreementType');
 if(cfg.shift)shiftHEl.value=cfg.shift;
 if(cfg.baseRate)baseRateEl.value=cfg.baseRate;
 if(cfg.meal)mealEl.value=cfg.meal;
 if(typeof cfg.oop==='boolean')useOOPEl.checked=cfg.oop;
 if(typeof cfg.nczd==='boolean')useNCZDEl.checked=cfg.nczd;
-function save(){localStorage.setItem('mzda_v5',JSON.stringify({shifts,manOverrides,obedyOverride,cfg:{shift:shiftHEl.value,baseRate:baseRateEl.value,meal:mealEl.value,oop:useOOPEl.checked,nczd:useNCZDEl.checked}}));}
+if(cfg.agreementType)agreementTypeEl.value=cfg.agreementType;
+
+// Init current month
+loadMonth(currentMonth);
+
+function save(){
+  stored[currentMonth]={shifts,manOverrides,obedyOverride};
+  stored.cfg={shift:shiftHEl.value,baseRate:baseRateEl.value,meal:mealEl.value,oop:useOOPEl.checked,nczd:useNCZDEl.checked,agreementType:agreementTypeEl.value};
+  localStorage.setItem(STORE_KEY,JSON.stringify(stored));
+}
 function defaultShiftH(){return Math.max(0.5,parseFloat(shiftHEl.value)||7.5);}
-obedyInput.addEventListener('input',()=>{const v=parseInt(obedyInput.value);obedyOverride=isNaN(v)?null:v;obedyInput.classList.toggle('auto-val',obedyOverride===null);obedyInput.classList.toggle('user-val',obedyOverride!==null);save();renderAll();});
-document.getElementById('resetObedy').addEventListener('click',()=>{obedyOverride=null;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');save();renderAll();});
-document.getElementById('resetCal').addEventListener('click',()=>{if(!confirm('Naozaj zmazať všetky dni z kalendára?'))return;Object.keys(shifts).forEach(k=>delete shifts[k]);obedyOverride=null;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');save();refreshCal();renderAll();});
+obedyInput.addEventListener('input',()=>{const v=parseInt(obedyInput.value);obedyOverride=isNaN(v)?null:v;stored[currentMonth].obedyOverride=obedyOverride;obedyInput.classList.toggle('auto-val',obedyOverride===null);obedyInput.classList.toggle('user-val',obedyOverride!==null);save();renderAll();});
+document.getElementById('resetObedy').addEventListener('click',()=>{obedyOverride=null;stored[currentMonth].obedyOverride=null;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');save();renderAll();});
+document.getElementById('resetCal').addEventListener('click',()=>{if(!confirm('Naozaj zmazať všetky dni z tohto mesiaca?'))return;Object.keys(shifts).forEach(k=>delete shifts[k]);obedyOverride=null;stored[currentMonth].obedyOverride=null;obedyInput.classList.add('auto-val');obedyInput.classList.remove('user-val');save();refreshCal();renderAll();});
 let mode='calendar';
 const tabCal=document.getElementById('tabCal'),tabMan=document.getElementById('tabMan');
 const calPanel=document.getElementById('calPanel'),manPanel=document.getElementById('manPanel');
@@ -401,7 +471,17 @@ calendar=new FullCalendar.Calendar(document.getElementById('calendar'),{
   headerToolbar:{left:'prev,next today',center:'title',right:''},
   dateClick:info=>openModal(info.dateStr.slice(0,10)),
   events:buildCalEvents(),
-  dayCellDidMount:arg=>{const ds=arg.date.toISOString().slice(0,10);if(SK_HOL.includes(ds))arg.el.style.background='rgba(161,44,123,.04)';}
+  dayCellDidMount:arg=>{const ds=arg.date.toISOString().slice(0,10);if(SK_HOL.includes(ds))arg.el.style.background='rgba(161,44,123,.04)';},
+  datesSet:info=>{
+    const mid=new Date((info.start.getTime()+info.end.getTime())/2);
+    const newMonth=mid.toISOString().slice(0,7);
+    if(newMonth!==currentMonth){
+      loadMonth(newMonth);
+      refreshCal();
+      if(mode==='manual')buildManualTable();
+      renderAll();
+    }
+  }
 });
 calendar.render();
 function getCalStats(){const stats={};TYPES.forEach(t=>stats[t]={days:0,hours:0});for(const [,s] of Object.entries(shifts)){const h=s.hours!=null?s.hours:defaultShiftH();s.types.forEach(t=>{stats[t].days++;stats[t].hours+=h;});}return stats;}
@@ -433,11 +513,18 @@ function calc(){
     TYPES.forEach(t=>{const ov=manOverrides[t]||{};const days=ov.days!=null?ov.days:stats[t].days;const hours=ov.hours!=null?ov.hours:(stats[t].hours||days*defH);const ob=ov.obedy!=null?ov.obedy:days;daysTotal+=days;totalH+=hours;basePay+=hours*baseRate;surPay+=hours*SUR[t];manObedy+=ob;});
   }
   const obedy=obedyOverride!=null?obedyOverride:manObedy;
-  const gross=r2(basePay+surPay);const oop=useOOPEl.checked?200:0;const spBasis=Math.max(0,gross-oop);
-  const sp=r2(spBasis*0.07);const nczd=useNCZDEl.checked?497.23:0;
-  const taxable=Math.max(0,r2(gross-sp-nczd));const tax=r2(taxable*0.19);const meal=r2(obedy*mealPrice);
-  const net=r2(Math.max(0,gross-sp-tax-meal));
-  return{daysTotal,totalH,basePay,surPay,gross,sp,spBasis,nczd,taxable,tax,meal,net,baseRate,mealPrice,obedy,manObedy};
+  const gross=r2(basePay+surPay);
+  const isDBPS=agreementTypeEl.value==='dbps';
+  const oop=(isDBPS&&useOOPEl.checked)?200:0;
+  const spBasis=Math.max(0,gross-oop);
+  let sp=0, zp=0, odvodyTotal=0;
+  if(isDBPS){ sp=r2(spBasis*0.07); odvodyTotal=sp; }
+  else{ zp=r2(gross*0.04); sp=r2(gross*0.094); odvodyTotal=zp+sp; }
+  const nczd=useNCZDEl.checked?497.23:0;
+  const taxable=Math.max(0,r2(gross-odvodyTotal-nczd));
+  const tax=r2(taxable*0.19);const meal=r2(obedy*mealPrice);
+  const net=r2(Math.max(0,gross-odvodyTotal-tax-meal));
+  return{daysTotal,totalH,basePay,surPay,gross,sp,zp,odvodyTotal,spBasis,nczd,taxable,tax,meal,net,baseRate,mealPrice,obedy,manObedy};
 }
 function renderCalSummary(){
   const stats=getCalStats();const sl=document.getElementById('calSummary');sl.innerHTML='';
@@ -454,28 +541,35 @@ function updateObedyField(autoVal){
 }
 function renderAll(){
   if(mode==='calendar')renderCalSummary();
-  const d=calc();updateObedyField(d.manObedy);
+  const d=calc();updateObedyField(d.manObedy);updateMonthBadge();
+  document.getElementById('oopRow').style.display=agreementTypeEl.value==='dbps'?'flex':'none';
   const bd=document.getElementById('breakdown');bd.innerHTML='';
   const add=(label,val,sub,cls)=>{const el=document.createElement('div');el.className='brow'+(cls?' '+cls:'');el.innerHTML=`<div><div class="bk">${label}</div>${sub?`<div class="bsub">${sub}</div>`:''}</div><div class="bv">${val}</div>`;bd.appendChild(el);};
   add('Základná mzda',fmt(d.basePay),`${fmtH(d.totalH)} × ${d.baseRate.toFixed(2)}\u00a0€`);
   add('Príplatky',fmt(d.surPay),'sobota / nedeľa / sviatok / noc');
   add('Hrubá mzda',fmt(d.gross),`${d.daysTotal}\u00a0dní`,'hl');
-  add('Starobné + invalidné\u00a07\u00a0%','\u2212'+fmt(d.sp),`základ po OOP\u00a0${fmt(d.spBasis)}`,'neg');
+  if(agreementTypeEl.value==='dbps'){
+    add('Starobné + invalidné\u00a07\u00a0%','\u2212'+fmt(d.sp),`základ po OOP\u00a0${fmt(d.spBasis)}`,'neg');
+  }else{
+    add('Zdravotné poistenie\u00a04\u00a0%','\u2212'+fmt(d.zp),`základ\u00a0${fmt(d.gross)}`,'neg');
+    add('Sociálne poistenie\u00a09,4\u00a0%','\u2212'+fmt(d.sp),`základ\u00a0${fmt(d.gross)}`,'neg');
+  }
   add('Daň z príjmu\u00a019\u00a0%','\u2212'+fmt(d.tax),`základ\u00a0${fmt(d.taxable)}\u00a0(NČZD\u00a0\u2212${fmt(d.nczd)})`,d.tax>0?'neg':'');
   add('Stravné','\u2212'+fmt(d.meal),`${d.obedy}\u00a0obedov × ${d.mealPrice.toFixed(2)}\u00a0€${obedyOverride!=null?' · ✏️ ručne':''}`,d.meal>0?'neg':'');
   document.getElementById('netPay').textContent=fmt(d.net);
   document.getElementById('grossLine').textContent='z hrubej mzdy '+fmt(d.gross);
   const pw=document.getElementById('pillsWrap');pw.innerHTML='';
   const addPill=(txt,green)=>{const el=document.createElement('span');el.style.cssText=`background:${green?'rgba(109,170,69,.3)':'rgba(255,255,255,.15)'};padding:3px 11px;border-radius:999px;font-size:.76rem;color:#fff`;el.textContent=txt;pw.appendChild(el);};
-  addPill(useOOPEl.checked?'OOP ✓':'OOP ✗',useOOPEl.checked);
+  if(agreementTypeEl.value==='dbps'){ addPill(useOOPEl.checked?'OOP ✓':'OOP ✗',useOOPEl.checked); }
   addPill(useNCZDEl.checked&&d.tax===0?'Daň 0,00 €':useNCZDEl.checked?'NČZD ✓':'NČZD ✗',useNCZDEl.checked&&d.tax===0);
   if(d.gross>0)addPill(Math.round(d.net/d.gross*100)+'% na ruke',false);
-  if(d.gross>0){const g=d.gross;document.getElementById('snet').style.width=(d.net/g*100)+'%';document.getElementById('ssp').style.width=(d.sp/g*100)+'%';document.getElementById('stax').style.width=(d.tax/g*100)+'%';document.getElementById('smeal').style.width=(d.meal/g*100)+'%';document.getElementById('progPct').textContent=Math.round(d.net/d.gross*100)+'% čistá';}
+  if(d.gross>0){const g=d.gross;document.getElementById('snet').style.width=(d.net/g*100)+'%';document.getElementById('ssp').style.width=(d.odvodyTotal/g*100)+'%';document.getElementById('stax').style.width=(d.tax/g*100)+'%';document.getElementById('smeal').style.width=(d.meal/g*100)+'%';document.getElementById('progPct').textContent=Math.round(d.net/d.gross*100)+'% čistá';}
   else{['snet','ssp','stax','smeal'].forEach(id=>document.getElementById(id).style.width='0%');document.getElementById('progPct').textContent='';}
   save();
 }
 [shiftHEl,baseRateEl,mealEl].forEach(el=>el.addEventListener('input',()=>{if(mode==='manual')buildManualTable();renderAll();calcGoal();}));
 [useOOPEl,useNCZDEl].forEach(el=>el.addEventListener('change',()=>{renderAll();calcGoal();}));
+[agreementTypeEl].forEach(el=>el.addEventListener('change',()=>{renderAll();calcGoal();}));
 /* ===== CIEĽOVÁ VÝPLATA ===== */
 const goalNetEl=document.getElementById('goalNet');
 const goalTypesEl=document.getElementById('goalTypes');
@@ -496,13 +590,16 @@ function calcNetFromHoursGoal(hours,type){
   const gross=r2(hours*(bR+SUR[type]));
   const days=hours/sH;
   const meal=r2(days*mP);
-  const oop=useOOPEl.checked?200:0;
+  const isDBPS=agreementTypeEl.value==='dbps';
+  const oop=(isDBPS&&useOOPEl.checked)?200:0;
   const spBasis=Math.max(0,gross-oop);
-  const sp=r2(spBasis*0.07);
+  let odvodyTotal=0;
+  if(isDBPS){ odvodyTotal=r2(spBasis*0.07); }
+  else{ odvodyTotal=r2(gross*0.04)+r2(gross*0.094); }
   const nczd=useNCZDEl.checked?497.23:0;
-  const taxable=Math.max(0,r2(gross-sp-nczd));
+  const taxable=Math.max(0,r2(gross-odvodyTotal-nczd));
   const tax=r2(taxable*0.19);
-  return gross-sp-tax-meal;
+  return gross-odvodyTotal-tax-meal;
 }
 function solveHoursForNet(targetNet,type){
   if(targetNet<=0)return 0;
@@ -537,5 +634,3 @@ renderAll();
 </script>
 </body>
 </html>
-
-
